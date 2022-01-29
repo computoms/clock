@@ -33,8 +33,12 @@ class TaskCollection:
 
     @staticmethod
     def from_file(filename):
-        file = open(filename, 'r')
-        lines = [line for line in file]
+        try:
+            file = open(filename, 'r')
+            lines = [line for line in file]
+        except Exception:
+            lines = []
+            print('Could not open file ./clock.txt')
         return TaskCollection.from_lines(lines)
 
     @staticmethod
