@@ -9,7 +9,7 @@ else:
     for arg in sys.argv[1:]:
         arguments += str(arg) + ' '
 
-if len(sys.argv) > 1 and 'show' in sys.argv[1]:
+if len(sys.argv) > 1 and 'show' in sys.argv[1] or len(sys.argv) == 1:
     os.system('python ./clock_report.py ' + arguments)
 else:
     os.system('python ./clock_add.py ' + arguments)
