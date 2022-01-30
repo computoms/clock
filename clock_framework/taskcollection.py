@@ -70,7 +70,7 @@ class TaskCollection:
     @staticmethod
     def get_filters(options):
         filters = []
-        if options.today:
+        if options.today.is_active:
             filters.append(clock_framework.filters.DateFilter(datetime.datetime.today()))
         if len(options.arguments) > 0:
             filters.append(clock_framework.filters.TagFilter(options.arguments))

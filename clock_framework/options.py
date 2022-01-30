@@ -1,23 +1,50 @@
 from datetime import datetime
 
+
+class Switch:
+    def __init__(self, short, long, expects_arg):
+        self.short = short
+        self.long = long
+        self.expects_argument = expects_arg
+        self.is_active = False
+        self.value = None
+    
+    def default_value(self, value):
+        new_switch = Switch(self.short, self.long, self.expects_argument)
+        new_switch.value = value
+        return new_switch
+
+    def is_switch(self, arg):
+        return arg in (self.short, self.long)
+
 class Commands:
     add = 'add'
     show = 'show'
     stop = 'stop'
 
     list = [add, show, stop]
-
+    
 class ClockOptions:
     def __init__(self):
-        self.at = datetime.now().strftime('%H:%M')
-        self.edit_current = False
         self.arguments = []
-        self.file = './clock.txt'
-        self.command = 'add'
-        self.today = False
+        self.command = Commands.add
+
+        self.at = Switch('-a', '--at', True).default_value(datetime.now().strftime('%H:%M'))
+        self.edit_current = Switch('-c', '--current', False)
+        self.file = Switch('-f', '--file', True).default_value('./clock.txt')
+        self.today = Switch('-t', '--today', False)
+        self.this_week = Switch('-w', '--week', False)
+
+        self.switch_list = [self.at, self.edit_current, self.file, self.today, self.this_week]
 
     def is_command(self, word):
         return word in Commands.list
+
+    def is_switch(self, arg):
+        for s in self.switch_list:
+            if s.is_switch(arg):
+                return True, s
+        return False, None
 
     def extract_command(self, arguments):
         if len(arguments) > 1 and self.is_command(arguments[1]):
@@ -30,16 +57,12 @@ class ClockOptions:
         i = 0
         while i < len(arguments):
             arg = arguments[i]
-            if arg in ('-a', '--at'):           # Add item at given time
-                i = i + 1
-                self.at = arguments[i]
-            elif arg in ('-c', '--current'):    # Replace current line by new description
-                self.edit_current = True
-            elif arg in ('-f', '--file'):       # Use different source file
-                i = i + 1
-                self.file = arguments[i]
-            elif arg in ('-t', '--today'):      # Filter issues by today
-                self.today = True
+            found, switch = self.is_switch(arg)
+            if found:
+                switch.is_active = True
+                if switch.expects_argument and len(arguments) > i + 1:
+                    i = i + 1
+                    switch.value = arguments[i + 1]
             else:
                 self.arguments.append(arg)
             i = i + 1

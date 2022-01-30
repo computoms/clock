@@ -12,18 +12,18 @@ from clock_framework.report import TaskReport
 
 def add_log(opt):
     logger = ClockLogger()
-    logger.read_file(opt.file)
-    if opt.edit_current:
+    logger.read_file(opt.file.value)
+    if opt.edit_current.is_active:
         logger.edit_current(' '.join(opt.arguments))
     elif opt.command == options.Commands.stop:
-        logger.add(opt.at, '[Stop]')
+        logger.add(opt.at.value, '[Stop]')
     else:
-        logger.add(opt.at, ' '.join(opt.arguments))
+        logger.add(opt.at.value, ' '.join(opt.arguments))
 
-    logger.write_file(opt.file)
+    logger.write_file(opt.file.value)
 
 def show_report(options):
-    collection = TaskCollection.from_file(options.file)
+    collection = TaskCollection.from_file(options.file.value)
     filters = TaskCollection.get_filters(options)
     for f in filters:
         collection = collection.filter(f)
