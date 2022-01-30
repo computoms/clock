@@ -1,15 +1,41 @@
 #!/usr/bin/env python
 import sys
 import os
+from datetime import datetime
+import clock_framework
+from clock_framework.options import ClockOptions
+from clock_framework import options
+from clock_framework.logger import ClockLogger
+from clock_framework.taskcollection import TaskCollection
+import clock_framework.filters
+from clock_framework.report import TaskReport
 
-arguments = ''
-if len(sys.argv) == 2 and 'stop' in sys.argv[1]:
-    arguments = '[Stop]'
-else:
-    for arg in sys.argv[1:]:
-        arguments += str(arg) + ' '
+def add_log(opt):
+    logger = ClockLogger()
+    logger.read_file(opt.file)
+    if opt.edit_current:
+        logger.edit_current(' '.join(opt.arguments))
+    elif opt.command == options.Commands.stop:
+        logger.add(opt.at, '[Stop]')
+    else:
+        logger.add(opt.at, ' '.join(opt.arguments))
 
-if len(sys.argv) > 1 and 'show' in sys.argv[1] or len(sys.argv) == 1:
-    os.system('python ./clock_report.py ' + arguments)
+    logger.write_file(opt.file)
+
+def show_report(options):
+    collection = TaskCollection.from_file(options.file)
+    filters = TaskCollection.get_filters(options)
+    for f in filters:
+        collection = collection.filter(f)
+
+    report = TaskReport(collection)
+    report.show(len(options.arguments))
+    report.print_total_time()
+
+opt = ClockOptions()
+opt.parse(sys.argv)
+
+if opt.command in [options.Commands.add, options.Commands.stop]:
+    add_log(opt)
 else:
-    os.system('python ./clock_add.py ' + arguments)
+    show_report(opt)

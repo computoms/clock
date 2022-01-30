@@ -64,7 +64,7 @@ class TaskReport:
             index = self.increase_circular_index(index)
             print(line)
 
-    def print_total(self):
+    def print_total_time(self):
         total_duration = datetime.timedelta(0)
         days = {}
         for task in self.collection.tasks:

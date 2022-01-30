@@ -1,6 +1,7 @@
 import datetime
 from datetimeutils import DateTimeUtils
 from task import Task
+import clock_framework.filters 
 
 class TaskCollection:
     def __init__(self):
@@ -65,3 +66,14 @@ class TaskCollection:
         c = TaskCollection()
         c.tasks = [filter.get_task(task) for task in self.tasks if filter.is_valid(task)]
         return c
+
+    @staticmethod
+    def get_filters(options):
+        filters = []
+        if options.today:
+            filters.append(clock_framework.filters.DateFilter(datetime.datetime.today()))
+        if len(options.arguments) > 0:
+            filters.append(clock_framework.filters.TagFilter(options.arguments))
+        return filters
+
+
