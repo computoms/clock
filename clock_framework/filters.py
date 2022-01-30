@@ -1,4 +1,4 @@
-from task import Task
+from clock_framework.task import Task
 
 class TaskFilterBase:
     def is_valid(self, task):

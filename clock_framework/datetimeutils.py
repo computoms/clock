@@ -46,6 +46,6 @@ class DateTimeUtils:
         total_seconds = DateTimeUtils.get_seconds(delta)
         hours = total_seconds / 3600
         minutes = (total_seconds - hours * 3600) / 60
-        return str(hours).zfill(2) + 'h ' + str(minutes).zfill(2) + 'm'
+        return str(int(hours)).zfill(2) + 'h ' + str(int(minutes)).zfill(2) + 'm'
 
     

@@ -1,6 +1,6 @@
 import datetime
-from datetimeutils import DateTimeUtils
-from colors import TerminalColors
+from clock_framework.datetimeutils import DateTimeUtils
+from clock_framework.colors import TerminalColors
 
 class PrintHelpers:
     graph_width = 40
@@ -9,8 +9,8 @@ class PrintHelpers:
     @staticmethod
     def get_graph(time, totaltime):
         char_width = DateTimeUtils.get_seconds(time) * PrintHelpers.graph_width / DateTimeUtils.get_seconds(totaltime)
-        result = [u'\u2588' for i in range(char_width)]
-        result.extend([' ' for i in range(char_width, PrintHelpers.graph_width)])
+        result = [u'\u2588' for i in range(int(char_width))]
+        result.extend([' ' for i in range(int(char_width), PrintHelpers.graph_width)])
         return ''.join(result)
 
     # TODO replace with match-case (python3)
