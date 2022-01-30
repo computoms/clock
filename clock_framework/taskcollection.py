@@ -1,4 +1,5 @@
 import datetime
+from clock_framework import datetimeutils
 from datetimeutils import DateTimeUtils
 from task import Task
 import clock_framework.filters 
@@ -72,6 +73,11 @@ class TaskCollection:
         filters = []
         if options.today.is_active:
             filters.append(clock_framework.filters.DateFilter(datetime.datetime.today()))
+        if options.this_week.is_active:
+            today = datetime.datetime.today()
+            monday = today - datetime.timedelta(days=today.weekday())
+            sunday = monday + datetime.timedelta(days=6)
+            filters.append(clock_framework.filters.PeriodFilter(monday, sunday))
         if len(options.arguments) > 0:
             filters.append(clock_framework.filters.TagFilter(options.arguments))
         return filters
