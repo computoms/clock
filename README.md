@@ -34,7 +34,9 @@ You can show the times with the `show` command:
 $ ./clock show
 ```
 
-Several filters are available. Default is to show all the tasks, ordered by first tag.
+Several filters are available. See `./clock --help` for the full documentation.
+
+Default is to show all the tasks, ordered by first tag.
 
 To show all the tasks with their details:
 
