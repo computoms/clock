@@ -58,3 +58,6 @@ Show tasks by tags:
 
 ![Show tasks by +myapp tag](https://github.com/computoms/clock/blob/main/img/myapp.png?raw=true)
 
+Show today's tasks details:
+
+![Show today's tasks details](https://github.com/computoms/clock/blob/main/img/details.png?raw=true)
