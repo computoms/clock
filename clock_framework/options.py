@@ -1,4 +1,7 @@
 from datetime import datetime
+from datetime import timedelta
+
+from clock_framework.datetimeutils import DateTimeUtils
 
 
 class Switch:
@@ -23,6 +26,10 @@ class Command:
         self.command = command
         self.description = description
         
+class TargetTime:
+    def __init__(self, target, is_per_day):
+        self.target = target
+        self.is_per_day = is_per_day
 
 class Commands:
     add = Command('add', 'Adds a new entry')
@@ -42,9 +49,18 @@ class ClockOptions:
         self.this_week = Switch('-w', '--week', False, '<show> Show only entries from the current week')
         self.from_filter = Switch('-s', '--from', True, '<show> Include entries with start date later or equal to given date (format YYYY-mm-dd)')
         self.to_filter = Switch('-e', '--to', True, '<show> Include entries with start date earlier or equal to given date (format YYYY-mm-dd)')
+        self.target_time = Switch('-T', '--target', True, '<show> Sets expected target time (format HH:MM) and computes the difference with actual times in the reports')
+        self.target_time_per_day = Switch('-D', '--target-per-day', True, '<show> Sets expected target time per day (format HH:MM) and computes the difference with actual times in the reports')
 
-        self.switch_list = [self.help, self.file, self.at, self.edit_current, self.today, self.this_week, self.from_filter, self.to_filter]
+        self.switch_list = [self.help, self.file, self.at, self.edit_current, self.today, self.this_week, self.from_filter, self.to_filter, self.target_time, self.target_time_per_day]
         self.command_list = [Commands.add, Commands.show, Commands.stop]
+
+    def get_target_time(self):
+        if self.target_time.is_active:
+            return TargetTime(DateTimeUtils.parse_duration(self.target_time.value), False)
+        elif self.target_time_per_day.is_active:
+            return TargetTime(DateTimeUtils.parse_duration(self.target_time_per_day.value), True)
+        return TargetTime(timedelta(0), False)
 
     def is_command(self, word):
         return word in [cmd.command for cmd in self.command_list]
@@ -87,11 +103,11 @@ class ClockOptions:
         print('')
         print('COMMANDS')
         for cmd in self.command_list:
-            print('     ' + str(cmd.command).ljust(16, ' ') + cmd.description)
+            print('     ' + str(cmd.command).ljust(22, ' ') + cmd.description)
         print('')
         print('OPTIONS')
         for opt in self.switch_list:
-            print('     ' + opt.short + ', ' + str(opt.long).ljust(12, ' ') + opt.description)
+            print('     ' + opt.short + ', ' + str(opt.long).ljust(18, ' ') + opt.description)
         print('')
         print('EXAMPLES')
         print('     Adds entry "Prototype implementation" with two ordered tags "+myapp" and "+coding" and one id ".456"')

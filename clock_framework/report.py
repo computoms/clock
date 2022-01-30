@@ -1,26 +1,90 @@
 import datetime
+from clock_framework.options import TargetTime
 from datetimeutils import DateTimeUtils
 from colors import TerminalColors
 
-class TaskReport:
-    def __init__(self, task_collection):
-        self.collection = task_collection
-        self.graph_width = 40
+class PrintHelpers:
+    graph_width = 40
+    color_index = -1
 
-    def get_graph(self, time, totaltime):
-        char_width = DateTimeUtils.get_seconds(time) * self.graph_width / DateTimeUtils.get_seconds(totaltime)
+    @staticmethod
+    def get_graph(time, totaltime):
+        char_width = DateTimeUtils.get_seconds(time) * PrintHelpers.graph_width / DateTimeUtils.get_seconds(totaltime)
         result = [u'\u2588' for i in range(char_width)]
-        result.extend([' ' for i in range(char_width, self.graph_width)])
+        result.extend([' ' for i in range(char_width, PrintHelpers.graph_width)])
         return ''.join(result)
 
-    def print_all(self):
+    # TODO replace with match-case (python3)
+    @staticmethod
+    def get_color():
+        PrintHelpers.color_index = PrintHelpers.color_index + 1
+        if PrintHelpers.color_index > 2:
+            PrintHelpers.color_index = 0
+
+        if PrintHelpers.color_index == 0:
+            return TerminalColors.BLUE
+        elif PrintHelpers.color_index == 1:
+            return TerminalColors.CYAN
+        return TerminalColors.GREEN
+
+class TaskReportBase(object):
+    def __init__(self, task_collection):
+        self.collection = task_collection
+
+    def print_report(self):
+        print('')
+
+# Print details of all entries in collection
+class DetailsReport(TaskReportBase):
+    def __init__(self, task_collection):
+        super(DetailsReport, self).__init__(task_collection)
+
+    def print_report(self):
         for task in self.collection.tasks:
-            desc = task.description + " "
+            desc = task.description + ' '
             for tag in task.tags:
-                desc += tag + " "
+                desc += tag + ' '
             print(desc)
-            for period in task.periods:
-                print(" . " + str(period.start) + " --> " + str(period.end))
+            for p in task.periods:
+                print('  . ' + DateTimeUtils.show_date(p.start) + ' --> ' + DateTimeUtils.show_date(p.end))
+
+# Print total time for given collection of entries
+class TotalTimeReport(TaskReportBase):
+    def __init__(self, task_collection, target_time):
+        super(TotalTimeReport, self).__init__(task_collection)
+        self.target_time = target_time
+
+    # Gets targetted times (both total and per day)
+    def get_targets(self, total_duration, days):
+        if self.target_time.target == datetime.timedelta(0):
+            return '', ''
+        target_total = self.target_time.target
+        if self.target_time.is_per_day:
+            target_total = target_total * len(days)
+        
+        total_difference = total_duration - target_total
+        return ' (' + DateTimeUtils.show_timedelta(total_difference) + ')', ' (' + DateTimeUtils.show_timedelta(total_difference / len(days)) + ')'
+
+    def print_report(self):
+        total_duration = datetime.timedelta(0)
+        days = {}
+        for task in self.collection.tasks:
+            total_duration += task.duration_total()
+            if len(task.periods) > 0 and str(task.periods[0].start.date()) not in days:
+                days[str(task.periods[0].start.date())] = 1
+
+        if len(days) == 0:
+            return
+
+        target_total, target_per_day = self.get_targets(total_duration, days)
+        print('     Total '.ljust(15) + DateTimeUtils.show_timedelta(total_duration) + target_total)
+        print('     Per day '.ljust(15) + DateTimeUtils.show_timedelta(total_duration / len(days)) + target_per_day)
+
+# Print graphical report by categories
+class CategoriesReport(TaskReportBase):
+    def __init__(self, task_collection, filter_level):
+        super(CategoriesReport, self).__init__(task_collection)
+        self.filter_level = filter_level
 
     def get_categories(self, level):
         tags = {}
@@ -35,45 +99,17 @@ class TaskReport:
                 tags[tag_name] += task.duration_total()
             else:
                 tags[tag_name] = task.duration_total()
-        return tags
+        
+        return sorted(tags.items(), key=lambda kv: kv[1], reverse=True)
 
-    def get_color(self, index):
-        if index == 0:
-            return TerminalColors.BLUE
-        if index == 1:
-            return TerminalColors.CYAN
-        return TerminalColors.GREEN
-
-    def increase_circular_index(self, index):
-        if index + 1 > 2:
-            return 0
-        return index + 1
-
-    def show(self, level):
-        tags = self.get_categories(level)
-        tags = sorted(tags.items(), key=lambda kv: kv[1], reverse=True) # Sort result by duration
+    def print_report(self):
+        tags = self.get_categories(self.filter_level)
         if len(tags) == 0:
             print("Filter did not return any matching item")
             return
 
         max_duration = next(iter(tags))[1]
-        index = 0
         for tag in tags:
-            bar_graph = self.get_graph(tag[1], max_duration)
-            line = self.get_color(index) + bar_graph + TerminalColors.END + ' ' + str(DateTimeUtils.show_timedelta(tag[1])) + ' ' + str(tag[0])
-            index = self.increase_circular_index(index)
+            bar_graph = PrintHelpers.get_graph(tag[1], max_duration)
+            line = PrintHelpers.get_color() + bar_graph + TerminalColors.END + ' ' + str(DateTimeUtils.show_timedelta(tag[1])) + ' ' + str(tag[0])
             print(line)
-
-    def print_total_time(self):
-        total_duration = datetime.timedelta(0)
-        days = {}
-        for task in self.collection.tasks:
-            total_duration += task.duration_total()
-            if len(task.periods) > 0 and str(task.periods[0].start.date()) not in days:
-                days[str(task.periods[0].start.date())] = 1
-
-        if len(days) == 0:
-            return
-        per_day = total_duration / len(days)
-
-        print("Total " + DateTimeUtils.show_timedelta(total_duration) + " (" + DateTimeUtils.show_timedelta(per_day) + " per day)")
