@@ -12,9 +12,9 @@ Use the `./clock` command to start working on a new task:
 $ ./clock Definition of the prototype +myapp +proto
 ```
 
-You can add tags / projects so your tasks (`+tag`) or identifiers (`.id`).
+You can add tags / projects to your tasks (`+tag`) or identifiers (`.id`).
 
-To switch to a new tas, just use the same command:
+To switch to a new task, just use the same command:
 
 ```
 $ ./clock Switching to new task
@@ -47,4 +47,9 @@ To filter by a tag:
 ```
 $ ./clock show +tag
 ```
+
+## Examples
+
+![Show today's tasks](https://github.com/computoms/clock/blob/master/img/today.png?raw=true)
+![Show tasks by +myapp tag](https://github.com/computoms/clock/blob/master/img/myapp.png?raw=true)
 
