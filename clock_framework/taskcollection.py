@@ -78,6 +78,14 @@ class TaskCollection:
             monday = today - datetime.timedelta(days=today.weekday())
             sunday = monday + datetime.timedelta(days=6)
             filters.append(clock_framework.filters.PeriodFilter(monday, sunday))
+        if options.from_filter.is_active or options.to_filter.is_active:
+            from_date = datetime.datetime(1900, 1, 1)
+            to_date = datetime.datetime(2100, 1, 1)
+            if options.from_filter.is_active:
+                from_date = datetime.datetime.strptime(options.from_filter.value, '%Y-%m-%d')
+            if options.to_filter.is_active:
+                to_date = datetime.datetime.strptime(options.to_filter.value, '%Y-%m-%d')
+            filters.append(clock_framework.filters.PeriodFilter(from_date, to_date))
         if len(options.arguments) > 0:
             filters.append(clock_framework.filters.TagFilter(options.arguments))
         return filters

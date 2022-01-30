@@ -34,8 +34,10 @@ class ClockOptions:
         self.file = Switch('-f', '--file', True).default_value('./clock.txt')
         self.today = Switch('-t', '--today', False)
         self.this_week = Switch('-w', '--week', False)
+        self.from_filter = Switch('-s', '--from', True)
+        self.to_filter = Switch('-e', '--to', True)
 
-        self.switch_list = [self.at, self.edit_current, self.file, self.today, self.this_week]
+        self.switch_list = [self.at, self.edit_current, self.file, self.today, self.this_week, self.from_filter, self.to_filter]
 
     def is_command(self, word):
         return word in Commands.list
@@ -60,9 +62,9 @@ class ClockOptions:
             found, switch = self.is_switch(arg)
             if found:
                 switch.is_active = True
-                if switch.expects_argument and len(arguments) > i + 1:
+                if switch.expects_argument and len(arguments) > (i + 1):
                     i = i + 1
-                    switch.value = arguments[i + 1]
+                    switch.value = arguments[i]
             else:
                 self.arguments.append(arg)
             i = i + 1
