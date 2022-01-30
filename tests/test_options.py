@@ -2,25 +2,26 @@ import unittest
 import datetime
 
 from clock_framework.options import ClockOptions
+from clock_framework.options import Commands
 
 class TestOptionsExtractCommand(unittest.TestCase):
     def test__command_show__extracts_command_show(self):
         opt = ClockOptions()
         opt.extract_command(['clock', 'show'])
 
-        self.assertEqual(opt.command, 'show')
+        self.assertEqual(opt.command, Commands.show)
 
     def test__command_add__extracts_command_add(self):
         opt = ClockOptions()
         opt.extract_command(['clock', 'add'])
 
-        self.assertEqual(opt.command, 'add')
+        self.assertEqual(opt.command, Commands.add)
 
     def test__command_stop__extracts_command_stop(self):
         opt = ClockOptions()
         opt.extract_command(['clock', 'stop'])
 
-        self.assertEqual(opt.command, 'stop')
+        self.assertEqual(opt.command, Commands.stop)
 
     def test__no_command__returns_arg_list_without_first(self):
         opt = ClockOptions()

@@ -31,6 +31,10 @@ def show_report(options):
 opt = ClockOptions()
 opt.parse(sys.argv)
 
+if opt.help.is_active:
+    opt.show_help()
+    exit()
+
 if opt.command in [options.Commands.add, options.Commands.stop]:
     add_log(opt)
 else:
