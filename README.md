@@ -50,6 +50,11 @@ $ ./clock show +tag
 
 ## Examples
 
+Show today's tasks:
+
 ![Show today's tasks](https://github.com/computoms/clock/blob/main/img/today.png?raw=true)
+
+Show tasks by tags:
+
 ![Show tasks by +myapp tag](https://github.com/computoms/clock/blob/main/img/myapp.png?raw=true)
 
