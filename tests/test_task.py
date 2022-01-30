@@ -1,7 +1,6 @@
 import unittest
 import datetime
-from clock_framework.task import Task
-from clock_framework.task import Period
+from clock_framework.task import Task, Period, TaskCollection
 
 class TestTaskParse(unittest.TestCase):
     def test__single_description__parses_correctly(self):
@@ -144,4 +143,60 @@ class TestTaskCopyEmpty(unittest.TestCase):
         self.assertTrue(len(t.periods) != 0)
         t2 = t.copy_empty()
         self.assertTrue(len(t2.periods) == 0)
+
+class TestTaskCollectionExists(unittest.TestCase):
+    def test__existing_task__return_true(self):
+        c = TaskCollection()
+        task = Task('test', datetime.datetime.now())
+        c.tasks.append(task)
+        self.assertTrue(c.exists(task))
+
+    def test__non_existing_task__returns_false(self):
+        c = TaskCollection()
+        task = Task('test', datetime.datetime.now())
+        self.assertTrue(not c.exists(task))
+
+class TestTaskCollectionGetTask(unittest.TestCase):
+    def test__non_existing_task__returns_none(self):
+        c = TaskCollection()
+        task = Task('test', datetime.datetime.now())
+        self.assertTrue(c.get_task(task) is None)
+
+    def test__existing_task__returns_task(self):
+        c = TaskCollection()
+        task = Task('test', datetime.datetime.now())
+        c.tasks.append(task)
+        self.assertTrue(c.get_task(task).equals(task))
+    
+class TestTaskCollectionAddTask(unittest.TestCase):
+    def test__stop__does_not_add_task(self):
+        c = TaskCollection()
+        task = Task('[Stop]', datetime.datetime.now())
+        c.add_task(task)
+        self.assertTrue(len(c.tasks) == 0)
+
+    def test__non_existing_task__adds_task(self):
+        c = TaskCollection()
+        task = Task('test', datetime.datetime.now())
+        c.add_task(task)
+        self.assertTrue(len(c.tasks) == 1)
+
+    def test__existing_task__adds_periods(self):
+        c = TaskCollection()
+        task = Task('test', datetime.datetime(2022, 1, 1, 9))
+        task.finish(datetime.datetime(2022, 1, 1, 10))
+        c.add_task(task)
+        task2 = Task('test', datetime.datetime(2022, 1, 1, 11))
+        c.add_task(task2)
+        self.assertTrue(len(c.tasks) == 1)
+        self.assertTrue(len(c.tasks[0].periods) == 2)
+
+    def test__existing_task__returns_existing_task(self):
+        c = TaskCollection()
+        task = Task('test', datetime.datetime(2022, 1, 1, 9))
+        task.finish(datetime.datetime(2022, 1, 1, 10))
+        c.add_task(task)
+        task2 = Task('test', datetime.datetime(2022, 1, 1, 11))
+        result = c.add_task(task2)
+        self.assertTrue(result == task)
 

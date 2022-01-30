@@ -2,8 +2,7 @@ import unittest
 from datetime import datetime
 from datetime import timedelta
 from clock_framework.filters import *
-from clock_framework.task import Task
-from clock_framework.task import Period
+from clock_framework.task import Task, Period
 
 class TestDateFilter(unittest.TestCase):
     def test__task_today__returns_true(self):

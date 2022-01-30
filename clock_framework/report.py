@@ -1,5 +1,4 @@
 import datetime
-from clock_framework.options import TargetTime
 from datetimeutils import DateTimeUtils
 from colors import TerminalColors
 

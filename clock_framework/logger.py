@@ -1,6 +1,7 @@
 from datetime import date
+from datetime import datetime
 from clock_framework.datetimeutils import DateTimeUtils
-import datetimeutils
+from clock_framework import task
 
 class ClockLogger:
     def __init__(self):
@@ -43,3 +44,34 @@ class ClockLogger:
         
         new_line = at + ' ' + description + '\n'
         self.lines.append(new_line)
+
+class ClockReader:
+    def __init__(self):
+        self.lines = []
+    
+    def read_file(self, filename):
+        try:
+            file = open(filename, 'r')
+            self.lines = [line for line in file]
+        except Exception:
+            self.lines = []
+            print('Could not open file ' + str(filename))
+
+    def parse(self):
+        collection = task.TaskCollection()
+        current_day = datetime(1900, 1, 1)
+        current_task = None
+        for line in self.lines:
+            if DateTimeUtils.is_date(line):
+                current_task and current_task.discard_last()
+                current_day = DateTimeUtils.get_date(line)
+                current_task = None
+                continue
+
+            time = DateTimeUtils.parse_time(current_day, line[0:5])
+            current_task and current_task.finish(time)
+            current_task = collection.add_task(task.Task(line[6:].replace('\n', ''), time))
+
+        current_task and current_task.finish(datetime.now())
+        return collection
+

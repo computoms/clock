@@ -72,3 +72,37 @@ class Task:
         t = Task(self.description, datetime.datetime.now())
         t.periods = []
         return t
+
+class TaskCollection:
+    def __init__(self):
+        self.tasks = []
+
+    def exists(self, task):
+        for t in self.tasks:
+            if t.equals(task):
+                return True
+        return False
+
+    def get_task(self, task):
+        for t in self.tasks:
+            if t.equals(task):
+                return t
+        return None
+
+    def add_task(self, task):
+        if task.is_stop(): # Do not add [Stop] tasks
+            return task
+        # If task already exists, add its periods
+        if self.exists(task): 
+            t = self.get_task(task)
+            for p in task.periods:
+                t.periods.append(p)
+            return t
+
+        self.tasks.append(task)
+        return task
+
+    def filter(self, filter):
+        c = TaskCollection()
+        c.tasks = [filter.get_task(task) for task in self.tasks if filter.is_valid(task)]
+        return c
