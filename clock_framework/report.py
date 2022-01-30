@@ -43,9 +43,13 @@ class DetailsReport(TaskReportBase):
             desc = task.description + ' '
             for tag in task.tags:
                 desc += tag + ' '
+            desc = desc.ljust(30)
             print(desc)
+            print(DateTimeUtils.show_timedelta(task.duration_total()))
             for p in task.periods:
-                print('  . ' + DateTimeUtils.show_date(p.start) + ' --> ' + DateTimeUtils.show_date(p.end)) + ' = ' + DateTimeUtils.show_timedelta(p.end - p.start)
+                print('                               . ' \
+                    + DateTimeUtils.show_timedelta(p.end - p.start) + ' : ' + DateTimeUtils.show_date(p.start) + ' ' + DateTimeUtils.show_time(p.start) + ' --> ' \
+                    + DateTimeUtils.show_date(p.end) + ' ' + DateTimeUtils.show_time(p.end))
 
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):

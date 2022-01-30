@@ -19,6 +19,10 @@ class DateTimeUtils:
         return date.strftime('%Y-%m-%d')
 
     @staticmethod
+    def show_time(date):
+        return date.strftime('%H:%M')
+
+    @staticmethod
     def parse_time(date, time):
         day_time = datetime.datetime.strptime(time, '%H:%M')
         return datetime.datetime(date.year, date.month, date.day, day_time.hour, day_time.minute, 0)
