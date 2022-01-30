@@ -14,7 +14,7 @@ class Switch:
         new_switch.value = value
         return new_switch
 
-    def is_switch(self, arg):
+    def corresponds_to(self, arg):
         return arg in (self.short, self.long)
 
 class Commands:
@@ -42,11 +42,11 @@ class ClockOptions:
     def is_command(self, word):
         return word in Commands.list
 
-    def is_switch(self, arg):
+    def get_switch(self, arg):
         for s in self.switch_list:
-            if s.is_switch(arg):
-                return True, s
-        return False, None
+            if s.corresponds_to(arg):
+                return s
+        return None
 
     def extract_command(self, arguments):
         if len(arguments) > 1 and self.is_command(arguments[1]):
@@ -59,12 +59,12 @@ class ClockOptions:
         i = 0
         while i < len(arguments):
             arg = arguments[i]
-            found, switch = self.is_switch(arg)
-            if found:
-                switch.is_active = True
-                if switch.expects_argument and len(arguments) > (i + 1):
+            s = self.get_switch(arg)
+            if s is not None:
+                s.is_active = True
+                if s.expects_argument and len(arguments) > (i + 1):
                     i = i + 1
-                    switch.value = arguments[i]
+                    s.value = arguments[i]
             else:
                 self.arguments.append(arg)
             i = i + 1
