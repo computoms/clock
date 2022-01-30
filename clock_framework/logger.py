@@ -32,6 +32,8 @@ class ClockLogger:
         self.lines.append(date.today().strftime('[%Y-%m-%d]') + '\n')
 
     def edit_current(self, description):
+        if len(self.lines) == 0:
+            return
         new_description = self.lines[-1][0:5] + ' ' + description + '\n'
         self.lines[-1] = new_description
 
