@@ -24,6 +24,9 @@ class IdFilter(TaskFilterBase):
                 self.ids.append(arg)
     
     def is_valid(self, task):
+        if len(self.ids) == 0:
+            return True
+
         for id in self.ids:
             if id in task.ids:
                 return True

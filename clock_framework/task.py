@@ -29,10 +29,7 @@ class Task:
                 desc += word + ' '
         self.description = desc.strip()
         if len(self.ids) > 0:
-            new_tags = ['+jira']
-            for tag in self.tags:
-                new_tags.append(tag)
-            self.tags = new_tags
+            self.tags.insert(0, '+jira')
 
     def is_stop(self):
         return '[Stop]' in self.description
