@@ -35,6 +35,11 @@ if arg.options.details:
     all.print_report()
     exit()
 
+if arg.options.current:
+    cur = report.CurrentIssueReport(collection)
+    cur.print_report()
+    exit()
+
 cat = report.CategoriesReport(collection, len(arg.arguments))
 cat.print_report()
 

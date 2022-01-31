@@ -53,7 +53,7 @@ class DetailsReport(TaskReportBase):
                     + DateTimeUtils.show_timedelta(p.end - p.start) + ' : ' + DateTimeUtils.show_date(p.start) + ' ' + DateTimeUtils.show_time(p.start) + ' --> ' \
                     + DateTimeUtils.show_date(p.end) + ' ' + DateTimeUtils.show_time(p.end))
 
-# Print periods in chronological order
+# Prints periods in chronological order
 class ChronologicalReport(TaskReportBase):
     def __init__(self, task_collection):
         super(ChronologicalReport, self).__init__(task_collection)
@@ -76,6 +76,30 @@ class ChronologicalReport(TaskReportBase):
                 + ','.join(kv[1].tags).ljust(30) \
                 + kv[1].description.ljust(40) \
                 + ','.join(kv[1].ids).ljust(20))
+
+# Prints current issue
+class CurrentIssueReport(TaskReportBase):
+    def __init__(self, task_collection):
+        super(CurrentIssueReport, self).__init__(task_collection)
+
+    def print_report(self):
+        latest_period = None
+        latest_task = None
+        for task in self.collection.tasks:
+            for p in task.periods:
+                if latest_period is None or latest_period.start < p.start:
+                    latest_period = p
+                    latest_task = task
+
+        print(str('Duration').ljust(10) + 'Date'.ljust(20) + 'Start'.ljust(10) + 'Stop'.ljust(10) + 'Tags'.ljust(30) + 'Name'.ljust(40) + 'IDs'.ljust(20))
+        print(DateTimeUtils.show_timedelta(latest_period.end - latest_period.start).ljust(10) \
+            + DateTimeUtils.show_date(latest_period.start).ljust(20) \
+            + DateTimeUtils.show_time(latest_period.start).ljust(10) \
+            + DateTimeUtils.show_time(latest_period.end).ljust(10) \
+            + ','.join(latest_task.tags).ljust(30) \
+            + latest_task.description.ljust(40) \
+            + ','.join(latest_task.ids).ljust(20))
+
 
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):

@@ -20,7 +20,7 @@ class ClockArguments:
         parser = argparse.ArgumentParser(description='Helps managing time tracking')
         parser.add_argument('command', default='add')
         parser.add_argument('-a', '--at', type=str, metavar='HH:MM', default=datetime.today().strftime('%H:%M'), help='<add> Specify a time (format HH:MM) of a new entry')
-        parser.add_argument('-c', '--current', action='store_true', help='<add> Modify the description of the current entry')
+        parser.add_argument('-c', '--current', action='store_true', help='<add> Modify the description of the current entry. <show> Shows current entry (latest)')
         parser.add_argument('-f', '--file', type=str, default='./clock.txt', help='Speficy the file to store time entries. Default is ./clock.txt')
         parser.add_argument('-t', '--today', action='store_true', help='<show> Show only entries from today')
         parser.add_argument('-w', '--week', action='store_true', help='<show> Show only entries from the current week')
