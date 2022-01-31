@@ -37,7 +37,7 @@ class ClockLogger:
             return
         new_description = self.lines[-1][0:5] + ' ' + description + '\n'
         self.lines[-1] = new_description
-        print('Edited current entry: ' + self.lines[-1])
+        print('Edited: ' + self.lines[-1])
 
     # Finds position of entry given the 'at' hour (today)
     def find_position(self, at):
@@ -61,7 +61,7 @@ class ClockLogger:
 
         new_line = at + ' ' + description + '\n'
         self.lines.insert(self.find_position(at), new_line)
-        print('Added new entry: ' + new_line)
+        print('Added: ' + new_line)
 
 class ClockReader:
     def __init__(self):
