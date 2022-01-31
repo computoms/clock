@@ -48,8 +48,8 @@ class DateTimeUtils:
     @staticmethod
     def show_timedelta(delta):
         total_seconds = DateTimeUtils.get_seconds(delta)
-        hours = total_seconds / 3600
-        minutes = (total_seconds - hours * 3600) / 60
-        return str(int(hours)).zfill(2) + 'h ' + str(int(minutes)).zfill(2) + 'm'
+        hours = int(total_seconds / 3600)
+        minutes = int((total_seconds - hours * 3600) / 60)
+        return str(hours).zfill(2) + 'h ' + str(minutes).zfill(2) + 'm'
 
     
