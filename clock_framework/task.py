@@ -21,9 +21,9 @@ class Task:
         for word in words:
             if len(word) == 0:
                 continue
-            if word[0] == '+':
+            if word[0] == '+' and len(word) > 1:
                 self.tags.append(word.strip())
-            elif word[0] == '.':
+            elif word[0] == '.' and len(word) > 1:
                 self.ids.append(word.strip())
             else:
                 desc += word + ' '
