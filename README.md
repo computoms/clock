@@ -10,7 +10,8 @@ At the end of the day, or anytime, you can then generate reports and statistics 
 
 ## File structure
 
-The file structure is very simple, as shown below:
+The file structure is very simple and can be edited using the script or directly with your favorite text editor.
+Here is an example file:
 
 ```
 [2022-01-01]
@@ -30,6 +31,10 @@ An entry in this file can be associated with tags if you start the tag with a `+
 Tags allow for powerful filtering and reporting. They are ordered, meaning that `+project +doc` is different from `+doc +project` (see reports and filters below).
 
 IDs allow to track time of tasks from an external tool, such as Jira. Entries with an ID are automatically assigned a default tag (`+jira`).
+
+## Special tasks
+
+The `[Stop]` task is used to stop the last task. It is not required if you switch tasks without taking a break.
 
 # Script usage
 
