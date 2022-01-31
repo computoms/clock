@@ -70,6 +70,8 @@ class Task:
     
     def copy_empty(self):
         t = Task(self.description, datetime.datetime.now())
+        t.tags = self.tags
+        t.ids = self.ids
         t.periods = []
         return t
 

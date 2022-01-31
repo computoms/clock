@@ -1,4 +1,5 @@
 import datetime
+from xmlrpc.client import DateTime
 from clock_framework.datetimeutils import DateTimeUtils
 from clock_framework.colors import TerminalColors
 
@@ -39,7 +40,8 @@ class DetailsReport(TaskReportBase):
         super(DetailsReport, self).__init__(task_collection)
 
     def print_report(self):
-        for task in self.collection.tasks:
+        tasks = sorted(self.collection.tasks, key=lambda t: t.periods[-1].start)
+        for task in tasks:
             desc = task.description + ' '
             for tag in task.tags:
                 desc += tag + ' '
@@ -50,6 +52,29 @@ class DetailsReport(TaskReportBase):
                 print('                               . ' \
                     + DateTimeUtils.show_timedelta(p.end - p.start) + ' : ' + DateTimeUtils.show_date(p.start) + ' ' + DateTimeUtils.show_time(p.start) + ' --> ' \
                     + DateTimeUtils.show_date(p.end) + ' ' + DateTimeUtils.show_time(p.end))
+
+# Print periods in chronological order
+class ChronologicalReport(TaskReportBase):
+    def __init__(self, task_collection):
+        super(ChronologicalReport, self).__init__(task_collection)
+
+    def print_report(self):
+        periods = []
+        for task in self.collection.tasks:
+            for p in task.periods:
+                periods.append([p, task])
+
+        periods = sorted(periods, key=lambda t: t[0].start)
+
+        print(str('Duration').ljust(10) + 'Date'.ljust(20) + 'Start'.ljust(10) + 'Stop'.ljust(10) + 'Tags'.ljust(30) + 'Name'.ljust(40))
+        for kv in periods:
+            p = kv[0]
+            print(DateTimeUtils.show_timedelta(p.end - p.start).ljust(10) \
+                + DateTimeUtils.show_date(p.start).ljust(20) \
+                + DateTimeUtils.show_time(p.start).ljust(10) \
+                + DateTimeUtils.show_time(p.end).ljust(10) \
+                + ','.join(kv[1].tags).ljust(30) \
+                + kv[1].description.ljust(40))
 
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):
@@ -80,8 +105,9 @@ class TotalTimeReport(TaskReportBase):
             return
 
         target_total, target_per_day = self.get_targets(total_duration, days)
-        print('     Total '.ljust(15) + DateTimeUtils.show_timedelta(total_duration) + target_total)
-        print('     Per day '.ljust(15) + DateTimeUtils.show_timedelta(total_duration / len(days)) + target_per_day)
+        print('')
+        print(' '*31 + 'Total '.ljust(10) + DateTimeUtils.show_timedelta(total_duration) + target_total)
+        print(' '*31 + 'Per day '.ljust(10) + DateTimeUtils.show_timedelta(total_duration / len(days)) + target_per_day)
 
 # Print graphical report by categories
 class CategoriesReport(TaskReportBase):

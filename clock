@@ -30,7 +30,8 @@ for f in arg.get_filters():
     collection = collection.filter(f)
 
 if arg.options.details:
-    all = report.DetailsReport(collection)
+    #all = report.DetailsReport(collection)
+    all = report.ChronologicalReport(collection)
     all.print_report()
     exit()
 
