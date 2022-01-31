@@ -66,7 +66,7 @@ class ChronologicalReport(TaskReportBase):
 
         periods = sorted(periods, key=lambda t: t[0].start)
 
-        print(str('Duration').ljust(10) + 'Date'.ljust(20) + 'Start'.ljust(10) + 'Stop'.ljust(10) + 'Tags'.ljust(30) + 'Name'.ljust(40))
+        print(str('Duration').ljust(10) + 'Date'.ljust(20) + 'Start'.ljust(10) + 'Stop'.ljust(10) + 'Tags'.ljust(30) + 'Name'.ljust(40) + 'IDs'.ljust(20))
         for kv in periods:
             p = kv[0]
             print(DateTimeUtils.show_timedelta(p.end - p.start).ljust(10) \
@@ -74,7 +74,8 @@ class ChronologicalReport(TaskReportBase):
                 + DateTimeUtils.show_time(p.start).ljust(10) \
                 + DateTimeUtils.show_time(p.end).ljust(10) \
                 + ','.join(kv[1].tags).ljust(30) \
-                + kv[1].description.ljust(40))
+                + kv[1].description.ljust(40) \
+                + ','.join(kv[1].ids).ljust(20))
 
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):

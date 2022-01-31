@@ -7,11 +7,27 @@ class TaskFilterBase:
         return task
 
 class TagFilter(TaskFilterBase):
-    def __init__(self, parent_tags):
-        self.parent_tags = parent_tags
+    def __init__(self, args):
+        self.parent_tags = []
+        for arg in args:
+            if '+' in arg:
+                self.parent_tags.append(arg)
 
     def is_valid(self, task):
         return task.is_matching(self.parent_tags)
+
+class IdFilter(TaskFilterBase):
+    def __init__(self, args):
+        self.ids = []
+        for arg in args:
+            if '.' in arg:
+                self.ids.append(arg)
+    
+    def is_valid(self, task):
+        for id in self.ids:
+            if id in task.ids:
+                return True
+        return False
 
 class DateFilter(TaskFilterBase):
     def __init__(self, date):

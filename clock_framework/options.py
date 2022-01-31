@@ -67,6 +67,7 @@ class ClockArguments:
             task_filters.append(filters.PeriodFilter(from_date, to_date))
         if len(self.arguments) > 0:
             task_filters.append(filters.TagFilter(self.arguments))
+            task_filters.append(filters.IdFilter(self.arguments))
         return task_filters
 
    
