@@ -1,8 +1,37 @@
 # clock
 
-Simple command-line time tracker.
+Simple command-line time tracker based on a simple text file format.
 
-# Usage
+# Introduction
+
+This simple utility uses a text file to store tasks with date/time information. Each time you start working on a task, a new line is created on the file with the current time and a description of the task you are starting to work on.
+
+At the end of the day, or anytime, you can then generate reports and statistics based on the file.
+
+## File structure
+
+The file structure is very simple, as shown below:
+
+```
+[2022-01-01]
+10:00 Starting project X +projectX
+11:23 Starting documentation of project X +projectX +doc
+12:00 [Stop]
+[2022-01-02]
+08:05 Starting workday, checking emails +office +emails
+09:00 Back on documentation +projectX +doc
+10:00 [Stop]
+```
+
+## Tags and ids
+
+An entry in this file can be associated with tags if you start the tag with a `+` (`+tag`) or ID if you start with a `.` (`.456`). 
+
+Tags allow for powerful filtering and reporting. They are ordered, meaning that `+project +doc` is different from `+doc +project` (see reports and filters below).
+
+IDs allow to track time of tasks from an external tool, such as Jira. Entries with an ID are automatically assigned a default tag (`+jira`).
+
+# Script usage
 
 ## Tracking tasks
 
@@ -10,33 +39,38 @@ Use the `./clock` command to start working on a new task:
 
 ```
 $ ./clock Definition of the prototype +myapp +proto
-```
+Added: 08:10 Definition of the prototype +myapp +proto
 
-You can add tags / projects to your tasks (`+tag`) or identifiers (`.id`).
+Duration   Date                  Start      Stop       Tags            Name                               IDs
+00:00      2022-01-01            08:10      08:10      +myapp,+proto   Definition of the prototype         
+```
 
 To switch to a new task, just use the same command:
 
 ```
 $ ./clock Switching to new task
+Added: 09:02 Switching to a new task
+
+Duration   Date                  Start      Stop       Tags            Name                               IDs
+00:00      2022-01-01            08:10      08:10                      Switching to a new task
 ```
 
 This will automatically stop the last task and start a new one. When you have finished working, use the `stop` command:
 
 ```
 $ ./clock stop
+Added: 10:00 [Stop]
 ```
 
 ## Reports
 
-You can show the times with the `show` command:
+You can show reports/statistics with the `show` command:
 
 ```
 $ ./clock show
 ```
 
-Several filters are available. See `./clock --help` for the full documentation.
-
-Default is to show all the tasks, ordered by first tag.
+All tasks are ordered by first tag by default. Several filters are available, see `./clock --help` for the full documentation.
 
 To show all the tasks with their details:
 
@@ -48,6 +82,12 @@ To filter by a tag:
 
 ```
 $ ./clock show +tag
+```
+
+To filter by an ID:
+
+```
+$ ./clock show .345
 ```
 
 ## Examples
