@@ -27,6 +27,20 @@ class PrintHelpers:
             return TerminalColors.CYAN
         return TerminalColors.GREEN
 
+    @staticmethod
+    def max_width(string, width):
+        if len(string) < width:
+            return string.ljust(width)
+
+        return (string[0:(width-3)] + '...').ljust(width)
+
+    @staticmethod
+    def colorize(string, color):
+        if not TerminalColors.enabled:
+            return string
+        return color + string + TerminalColors.END
+
+
 class TaskReportBase(object):
     def __init__(self, task_collection):
         self.collection = task_collection
@@ -66,16 +80,16 @@ class ChronologicalReport(TaskReportBase):
 
         periods = sorted(periods, key=lambda t: t[0].start)
 
-        print(str('Duration').ljust(10) + 'Date'.ljust(20) + 'Start'.ljust(10) + 'Stop'.ljust(10) + 'Tags'.ljust(30) + 'Name'.ljust(40) + 'IDs'.ljust(20))
+        print(str('Duration').ljust(10) + 'Date'.ljust(12) + 'Start'.ljust(6) + 'Stop'.ljust(6) + 'Tags'.ljust(20) + 'IDs'.ljust(10) + 'Name'.ljust(40))
         for kv in periods:
             p = kv[0]
-            print(DateTimeUtils.show_timedelta(p.end - p.start).ljust(10) \
-                + DateTimeUtils.show_date(p.start).ljust(20) \
-                + DateTimeUtils.show_time(p.start).ljust(10) \
-                + DateTimeUtils.show_time(p.end).ljust(10) \
-                + ','.join(kv[1].tags).ljust(30) \
-                + kv[1].description.ljust(40) \
-                + ','.join(kv[1].ids).ljust(20))
+            print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(p.end - p.start).ljust(10), TerminalColors.GREEN) \
+                + DateTimeUtils.show_date(p.start).ljust(12) \
+                + DateTimeUtils.show_time(p.start).ljust(6) \
+                + DateTimeUtils.show_time(p.end).ljust(6) \
+                + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].tags), 20), TerminalColors.BLUE) \
+                + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].ids), 10), TerminalColors.BOLD) \
+                + PrintHelpers.max_width(kv[1].description, 40))
 
 # Prints current issue
 class CurrentIssueReport(TaskReportBase):
@@ -91,14 +105,14 @@ class CurrentIssueReport(TaskReportBase):
                     latest_period = p
                     latest_task = task
 
-        print(str('Duration').ljust(10) + 'Date'.ljust(20) + 'Start'.ljust(10) + 'Stop'.ljust(10) + 'Tags'.ljust(30) + 'Name'.ljust(40) + 'IDs'.ljust(20))
-        print(DateTimeUtils.show_timedelta(latest_period.end - latest_period.start).ljust(10) \
-            + DateTimeUtils.show_date(latest_period.start).ljust(20) \
-            + DateTimeUtils.show_time(latest_period.start).ljust(10) \
-            + DateTimeUtils.show_time(latest_period.end).ljust(10) \
-            + ','.join(latest_task.tags).ljust(30) \
-            + latest_task.description.ljust(40) \
-            + ','.join(latest_task.ids).ljust(20))
+        print(str('Duration').ljust(10) + 'Date'.ljust(12) + 'Start'.ljust(6) + 'Stop'.ljust(6) + 'Tags'.ljust(20) + 'IDs'.ljust(10) + 'Name'.ljust(40))
+        print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(latest_period.end - latest_period.start).ljust(10), TerminalColors.GREEN) \
+            + DateTimeUtils.show_date(latest_period.start).ljust(12) \
+            + DateTimeUtils.show_time(latest_period.start).ljust(6) \
+            + DateTimeUtils.show_time(latest_period.end).ljust(6) \
+            + PrintHelpers.colorize(PrintHelpers.max_width(','.join(latest_task.tags), 20), TerminalColors.BLUE) \
+            + PrintHelpers.colorize(PrintHelpers.max_width(','.join(latest_task.ids), 10), TerminalColors.BOLD) \
+            + PrintHelpers.max_width(latest_task.description, 40))
 
 
 # Print total time for given collection of entries
@@ -165,5 +179,5 @@ class CategoriesReport(TaskReportBase):
         max_duration = next(iter(tags))[1]
         for tag in tags:
             bar_graph = PrintHelpers.get_graph(tag[1], max_duration)
-            line = PrintHelpers.get_color() + bar_graph + TerminalColors.END + ' ' + str(DateTimeUtils.show_timedelta(tag[1])) + ' ' + str(tag[0])
+            line = PrintHelpers.colorize(bar_graph, PrintHelpers.get_color())  + ' ' + str(DateTimeUtils.show_timedelta(tag[1])) + ' ' + str(tag[0])
             print(line)
