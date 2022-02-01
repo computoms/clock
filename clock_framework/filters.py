@@ -1,10 +1,15 @@
 from clock_framework.task import Task
+from clock_framework.task import TaskCollection
 
 class TaskFilterBase:
     def is_valid(self, task):
         return True
     def get_task(self, task):
         return task
+    def apply_to(self, collection):
+        c = TaskCollection()
+        c.tasks = [t for t in collection.tasks if self.is_valid(t)]
+        return c
 
 class TagFilter(TaskFilterBase):
     def __init__(self, args):
@@ -52,6 +57,11 @@ class DateFilter(TaskFilterBase):
 
         return t
 
+    def apply_to(self, collection):
+        c = TaskCollection()
+        c.tasks = [self.get_task(t) for t in collection.tasks if self.is_valid(t)]
+        return c
+
 class PeriodFilter(TaskFilterBase):
     def __init__(self, date_start, date_end):
         self.date_start = date_start.date()
@@ -72,3 +82,29 @@ class PeriodFilter(TaskFilterBase):
                 t.periods.append(p)
 
         return t
+
+    def apply_to(self, collection):
+        c = TaskCollection()
+        c.tasks = [self.get_task(t) for t in collection.tasks if self.is_valid(t)]
+        return c
+
+class LastFilter(TaskFilterBase):
+    def __init__(self, count):
+        self.count = count
+
+    def apply_to(self, collection):
+        c = TaskCollection()
+        periods = []
+        for task in collection.tasks:
+            for p in task.periods:
+                periods.append([p, task])
+
+        ordered_periods = sorted(periods, key=lambda t: t[0].start, reverse=True)
+        for i in range(self.count):
+            if i < len(ordered_periods):
+                t = ordered_periods[i][1].copy_empty()
+                t.periods.append(ordered_periods[i][0])
+                c.tasks.append(t)
+
+        return c
+

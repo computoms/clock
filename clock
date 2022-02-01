@@ -36,7 +36,7 @@ reader = logger.ClockReader()
 reader.read_file(arg.options.file)
 collection = reader.parse()
 for f in arg.get_filters():
-    collection = collection.filter(f)
+    collection = f.apply_to(collection)
 
 if arg.options.details:
     #all = report.DetailsReport(collection)
@@ -48,8 +48,9 @@ if arg.options.current:
     show_current(arg)
     exit()
 
-cat = report.CategoriesReport(collection, len(arg.arguments))
-cat.print_report()
+if arg.options.categories:
+    cat = report.CategoriesReport(collection, len(arg.arguments))
+    cat.print_report()
 
 time_report = report.TotalTimeReport(collection, arg.get_target_time())
 time_report.print_report()
