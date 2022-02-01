@@ -20,7 +20,8 @@ class ClockLogger:
             with open(file, 'w') as f:
                 f.writelines(self.lines)
             return True
-        except Exception:
+        except Exception as e:
+            print('Could not write to file ' + str(file) + ': ' + str(e))
             return False
 
     def date_exists(self):

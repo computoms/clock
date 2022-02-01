@@ -1,6 +1,7 @@
 from clock_framework import logger
 from clock_framework import report
 from clock_framework import options
+from os.path import expanduser
 
 class Clock():
     def __init__(self):
@@ -10,13 +11,14 @@ class Clock():
 
         self.filters = []
         self.reports = []
-        self.file = './clock.txt'
+        self.file = expanduser('~') + '/clock.txt'
 
     # Parses the arguments from the options.ClockArguments() and 
     # fills in the self.file, self.filters and self.reports
     def parse_arguments(self):
         self.arg.parse()
-        self.file = self.arg.options.file
+        if self.arg.options.file is not None and self.arg.options.file != '':
+            self.file = self.arg.options.file
         self.filters = self.arg.get_filters()
         if self.arg.options.command != 'show':
             return

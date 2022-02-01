@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 import argparse
 import sys
+from os.path import expanduser
 from clock_framework.datetimeutils import DateTimeUtils
 from clock_framework import filters
 
@@ -19,8 +20,8 @@ class ClockArguments:
     def parse(self):
         parser = argparse.ArgumentParser(description='Helps managing time tracking')
         parser.add_argument('command', default='add', help='Command (add, edit, show). add: add a new entry. edit: edit current entry\'s description. show: show reports and statistics.')
+        parser.add_argument('-f', '--file', type=str, help='Speficy the file to store time entries. Default is ~/clock.txt')
         parser.add_argument('-a', '--at', type=str, metavar='HH:MM', default=datetime.today().strftime('%H:%M'), help='<add> Specify a time (format HH:MM) of a new entry')
-        parser.add_argument('-f', '--file', type=str, default='./clock.txt', help='Speficy the file to store time entries. Default is ./clock.txt')
         # Filters
         parser.add_argument('-t', '--today', action='store_true', help='<show> [Filter] Show only entries from today')
         parser.add_argument('-w', '--week', action='store_true', help='<show> [Filter] Show only entries from the current week')
@@ -41,6 +42,9 @@ class ClockArguments:
         if opt.command not in ('add', 'stop', 'show'):
             args.insert(0, opt.command)
             opt.command = 'add'
+
+        if opt.file is None or opt.file == '':
+            opt.file = expanduser('~') + '/clock.txt'
 
         self.options = opt
         self.arguments = args
