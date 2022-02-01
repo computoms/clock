@@ -42,19 +42,19 @@ class PrintHelpers:
 
 
 class TaskReportBase(object):
-    def __init__(self, task_collection):
-        self.collection = task_collection
+    def __init__(self):
+        pass
 
-    def print_report(self):
+    def print_report(self, collection):
         print('')
 
 # Print details of all entries in collection
 class DetailsReport(TaskReportBase):
-    def __init__(self, task_collection):
-        super(DetailsReport, self).__init__(task_collection)
+    def __init__(self):
+        super(DetailsReport, self).__init__()
 
-    def print_report(self):
-        tasks = sorted(self.collection.tasks, key=lambda t: t.periods[-1].start)
+    def print_report(self, collection):
+        tasks = sorted(collection.tasks, key=lambda t: t.periods[-1].start)
         for task in tasks:
             desc = task.description + ' '
             for tag in task.tags:
@@ -69,12 +69,12 @@ class DetailsReport(TaskReportBase):
 
 # Prints periods in chronological order
 class ChronologicalReport(TaskReportBase):
-    def __init__(self, task_collection):
-        super(ChronologicalReport, self).__init__(task_collection)
+    def __init__(self):
+        super(ChronologicalReport, self).__init__()
 
-    def print_report(self):
+    def print_report(self, collection):
         periods = []
-        for task in self.collection.tasks:
+        for task in collection.tasks:
             for p in task.periods:
                 periods.append([p, task])
 
@@ -93,13 +93,13 @@ class ChronologicalReport(TaskReportBase):
 
 # Prints current issue
 class CurrentIssueReport(TaskReportBase):
-    def __init__(self, task_collection):
-        super(CurrentIssueReport, self).__init__(task_collection)
+    def __init__(self):
+        super(CurrentIssueReport, self).__init__()
 
-    def print_report(self):
+    def print_report(self, collection):
         latest_period = None
         latest_task = None
-        for task in self.collection.tasks:
+        for task in collection.tasks:
             for p in task.periods:
                 if latest_period is None or latest_period.start < p.start:
                     latest_period = p
@@ -117,8 +117,8 @@ class CurrentIssueReport(TaskReportBase):
 
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):
-    def __init__(self, task_collection, target_time):
-        super(TotalTimeReport, self).__init__(task_collection)
+    def __init__(self, target_time):
+        super(TotalTimeReport, self).__init__()
         self.target_time = target_time
 
     # Gets targetted times (both total and per day)
@@ -132,10 +132,10 @@ class TotalTimeReport(TaskReportBase):
         total_difference = total_duration - target_total
         return ' (' + DateTimeUtils.show_timedelta(total_difference) + ')', ' (' + DateTimeUtils.show_timedelta(total_difference / len(days)) + ')'
 
-    def print_report(self):
+    def print_report(self, collection):
         total_duration = datetime.timedelta(0)
         days = {}
-        for task in self.collection.tasks:
+        for task in collection.tasks:
             total_duration += task.duration_total()
             if len(task.periods) > 0 and str(task.periods[0].start.date()) not in days:
                 days[str(task.periods[0].start.date())] = 1
@@ -150,16 +150,16 @@ class TotalTimeReport(TaskReportBase):
 
 # Print graphical report by categories
 class CategoriesReport(TaskReportBase):
-    def __init__(self, task_collection, filter_level):
-        super(CategoriesReport, self).__init__(task_collection)
+    def __init__(self, filter_level):
+        super(CategoriesReport, self).__init__()
         self.filter_level = filter_level
 
-    def get_categories(self, level):
+    def get_categories(self, collection, level):
         tags = {}
-        if len(self.collection.tasks) == 0:
+        if len(collection.tasks) == 0:
             return tags
 
-        for task in self.collection.tasks:
+        for task in collection.tasks:
             tag_name = task.description
             if len(task.tags) > level:
                 tag_name = task.tags[level]
@@ -170,8 +170,8 @@ class CategoriesReport(TaskReportBase):
         
         return sorted(tags.items(), key=lambda kv: kv[1], reverse=True)
 
-    def print_report(self):
-        tags = self.get_categories(self.filter_level)
+    def print_report(self, collection):
+        tags = self.get_categories(collection, self.filter_level)
         if len(tags) == 0:
             print("Filter did not return any matching item")
             return
