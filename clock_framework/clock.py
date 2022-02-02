@@ -25,7 +25,7 @@ class Clock():
             return
 
         if self.arg.options.details:
-            self.reports.append(report.ChronologicalReport())
+            self.reports.append(report.DetailsReport())
         elif self.arg.options.timeline and self.arg.options.today:
             self.reports.append(report.DayTimelineReport())
         elif self.arg.options.categories:

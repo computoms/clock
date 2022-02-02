@@ -49,9 +49,9 @@ class TaskReportBase(object):
         print('')
 
 # Prints periods in chronological order
-class ChronologicalReport(TaskReportBase):
+class DetailsReport(TaskReportBase):
     def __init__(self):
-        super(ChronologicalReport, self).__init__()
+        super(DetailsReport, self).__init__()
 
     def print_report(self, collection):
         periods = []
