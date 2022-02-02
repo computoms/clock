@@ -1,6 +1,7 @@
 from clock_framework import logger
 from clock_framework import report
 from clock_framework import options
+from clock_framework import filters
 from os.path import expanduser
 
 class Clock():
@@ -40,12 +41,6 @@ class Clock():
         for r in self.reports:
             r.print_report(collection)
 
-    # Shows current issue report
-    def report_current(self):
-        self.reader.read_file(self.file)
-        collection = self.reader.parse()
-        report.CurrentIssueReport().print_report(collection)
-
     # Add new entry at given time (at) with given description (description)
     def add(self, at, description):
         self.writer.read_file(self.file)
@@ -57,6 +52,15 @@ class Clock():
         self.writer.read_file(self.file)
         self.writer.edit_current(description)
         self.writer.write_file(self.file)
+
+    # Shows current issue report
+    @staticmethod
+    def report_current(file):
+        c = Clock()
+        c.file = file
+        c.filters.append(filters.LastFilter(1))
+        c.reports.append(report.DetailsReport())
+        c.show()
 
     # Single static method to run script according to command line arguments
     @staticmethod
@@ -75,4 +79,4 @@ class Clock():
             clock.add(options.at, '[Stop]')
 
         if options.command in ('add', 'edit', 'stop'):
-            clock.report_current()
+            Clock.report_current(options.file)

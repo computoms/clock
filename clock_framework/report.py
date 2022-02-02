@@ -77,29 +77,6 @@ class ChronologicalReport(TaskReportBase):
                 + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].ids), 10), TerminalColors.BOLD) \
                 + PrintHelpers.max_width(kv[1].description, remaining_width))
 
-# Prints current issue
-class CurrentIssueReport(TaskReportBase):
-    def __init__(self):
-        super(CurrentIssueReport, self).__init__()
-
-    def print_report(self, collection):
-        latest_period = None
-        latest_task = None
-        for task in collection.tasks:
-            for p in task.periods:
-                if latest_period is None or latest_period.start < p.start:
-                    latest_period = p
-                    latest_task = task
-
-        print(str('Duration').ljust(10) + 'Date'.ljust(12) + 'Start'.ljust(6) + 'Stop'.ljust(6) + 'Tags'.ljust(20) + 'IDs'.ljust(10) + 'Name'.ljust(40))
-        print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(latest_period.end - latest_period.start).ljust(10), TerminalColors.GREEN) \
-            + DateTimeUtils.show_date(latest_period.start).ljust(12) \
-            + DateTimeUtils.show_time(latest_period.start).ljust(6) \
-            + DateTimeUtils.show_time(latest_period.end).ljust(6) \
-            + PrintHelpers.colorize(PrintHelpers.max_width(','.join(latest_task.tags), 20), TerminalColors.BLUE) \
-            + PrintHelpers.colorize(PrintHelpers.max_width(','.join(latest_task.ids), 10), TerminalColors.BOLD) \
-            + PrintHelpers.max_width(latest_task.description, 40))
-
 
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):
