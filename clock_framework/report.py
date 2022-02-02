@@ -117,9 +117,10 @@ class CurrentIssueReport(TaskReportBase):
 
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):
-    def __init__(self, target_time):
+    def __init__(self, target_time, show_per_day):
         super(TotalTimeReport, self).__init__()
         self.target_time = target_time
+        self.show_per_day = show_per_day
 
     # Gets targetted times (both total and per day)
     def get_targets(self, total_duration, days):
@@ -146,7 +147,8 @@ class TotalTimeReport(TaskReportBase):
         target_total, target_per_day = self.get_targets(total_duration, days)
         print('')
         print(' '*31 + 'Total '.ljust(10) + DateTimeUtils.show_timedelta(total_duration) + target_total)
-        print(' '*31 + 'Per day '.ljust(10) + DateTimeUtils.show_timedelta(total_duration / len(days)) + target_per_day)
+        if self.show_per_day:
+            print(' '*31 + 'Per day '.ljust(10) + DateTimeUtils.show_timedelta(total_duration / len(days)) + target_per_day)
 
 # Print graphical report by categories
 class CategoriesReport(TaskReportBase):
