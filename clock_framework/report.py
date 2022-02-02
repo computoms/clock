@@ -14,7 +14,6 @@ class PrintHelpers:
         result.extend([' ' for i in range(int(char_width), char_width_total)])
         return ''.join(result)
 
-    # TODO replace with match-case (python3)
     @staticmethod
     def get_color():
         PrintHelpers.color_index = PrintHelpers.color_index + 1
@@ -77,13 +76,11 @@ class DetailsReport(TaskReportBase):
                 + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].ids), 10), TerminalColors.BOLD) \
                 + PrintHelpers.max_width(kv[1].description, remaining_width))
 
-
 # Print total time for given collection of entries
 class TotalTimeReport(TaskReportBase):
-    def __init__(self, target_time, show_per_day):
+    def __init__(self, target_time):
         super(TotalTimeReport, self).__init__()
         self.target_time = target_time
-        self.show_per_day = show_per_day
 
     # Gets targetted times (both total and per day)
     def get_targets(self, total_duration, days):
@@ -110,7 +107,7 @@ class TotalTimeReport(TaskReportBase):
         target_total, target_per_day = self.get_targets(total_duration, days)
         print('')
         print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(total_duration), TerminalColors.GREEN) + target_total + ' Total')
-        if self.show_per_day:
+        if len(days) > 1:
             print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(total_duration / len(days)), TerminalColors.GREEN) + target_per_day + ' Per day')
 
 # Print graphical report by categories
