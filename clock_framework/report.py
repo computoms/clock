@@ -2,16 +2,16 @@ import datetime
 from xmlrpc.client import DateTime
 from clock_framework.datetimeutils import DateTimeUtils
 from clock_framework.colors import TerminalColors
+import os
 
 class PrintHelpers:
-    graph_width = 40
     color_index = -1
 
     @staticmethod
-    def get_graph(time, totaltime):
-        char_width = DateTimeUtils.get_seconds(time) * PrintHelpers.graph_width / DateTimeUtils.get_seconds(totaltime)
+    def get_graph(time, totaltime, char_width_total):
+        char_width = DateTimeUtils.get_seconds(time) * char_width_total / DateTimeUtils.get_seconds(totaltime)
         result = [u'\u2588' for i in range(int(char_width))]
-        result.extend([' ' for i in range(int(char_width), PrintHelpers.graph_width)])
+        result.extend([' ' for i in range(int(char_width), char_width_total)])
         return ''.join(result)
 
     # TODO replace with match-case (python3)
@@ -48,25 +48,6 @@ class TaskReportBase(object):
     def print_report(self, collection):
         print('')
 
-# Print details of all entries in collection
-class DetailsReport(TaskReportBase):
-    def __init__(self):
-        super(DetailsReport, self).__init__()
-
-    def print_report(self, collection):
-        tasks = sorted(collection.tasks, key=lambda t: t.periods[-1].start)
-        for task in tasks:
-            desc = task.description + ' '
-            for tag in task.tags:
-                desc += tag + ' '
-            desc = desc.ljust(30)
-            print(desc)
-            print(DateTimeUtils.show_timedelta(task.duration_total()))
-            for p in task.periods:
-                print('                               . ' \
-                    + DateTimeUtils.show_timedelta(p.end - p.start) + ' : ' + DateTimeUtils.show_date(p.start) + ' ' + DateTimeUtils.show_time(p.start) + ' --> ' \
-                    + DateTimeUtils.show_date(p.end) + ' ' + DateTimeUtils.show_time(p.end))
-
 # Prints periods in chronological order
 class ChronologicalReport(TaskReportBase):
     def __init__(self):
@@ -79,8 +60,13 @@ class ChronologicalReport(TaskReportBase):
                 periods.append([p, task])
 
         periods = sorted(periods, key=lambda t: t[0].start)
+        total_width = os.get_terminal_size().columns
+        remaining_width = total_width - (10 + 12 + 6 + 6 + 20 + 10)
+        if remaining_width < 0:
+            print("Terminal is too small to show details.")
+            exit
 
-        print(str('Duration').ljust(10) + 'Date'.ljust(12) + 'Start'.ljust(6) + 'Stop'.ljust(6) + 'Tags'.ljust(20) + 'IDs'.ljust(10) + 'Name'.ljust(40))
+        print(str('Duration').ljust(10) + 'Date'.ljust(12) + 'Start'.ljust(6) + 'Stop'.ljust(6) + 'Tags'.ljust(20) + 'IDs'.ljust(10) + 'Name'.ljust(remaining_width))
         for kv in periods:
             p = kv[0]
             print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(p.end - p.start).ljust(10), TerminalColors.GREEN) \
@@ -89,7 +75,7 @@ class ChronologicalReport(TaskReportBase):
                 + DateTimeUtils.show_time(p.end).ljust(6) \
                 + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].tags), 20), TerminalColors.BLUE) \
                 + PrintHelpers.colorize(PrintHelpers.max_width(','.join(kv[1].ids), 10), TerminalColors.BOLD) \
-                + PrintHelpers.max_width(kv[1].description, 40))
+                + PrintHelpers.max_width(kv[1].description, remaining_width))
 
 # Prints current issue
 class CurrentIssueReport(TaskReportBase):
@@ -146,9 +132,9 @@ class TotalTimeReport(TaskReportBase):
 
         target_total, target_per_day = self.get_targets(total_duration, days)
         print('')
-        print(' '*31 + 'Total '.ljust(10) + DateTimeUtils.show_timedelta(total_duration) + target_total)
+        print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(total_duration), TerminalColors.GREEN) + target_total + ' Total')
         if self.show_per_day:
-            print(' '*31 + 'Per day '.ljust(10) + DateTimeUtils.show_timedelta(total_duration / len(days)) + target_per_day)
+            print(PrintHelpers.colorize(DateTimeUtils.show_timedelta(total_duration / len(days)), TerminalColors.GREEN) + target_per_day + ' Per day')
 
 # Print graphical report by categories
 class CategoriesReport(TaskReportBase):
@@ -172,16 +158,29 @@ class CategoriesReport(TaskReportBase):
         
         return sorted(tags.items(), key=lambda kv: kv[1], reverse=True)
 
+    def get_graph_length(self, max_tag_length):
+        graph_length = os.get_terminal_size().columns - max_tag_length - 10
+        if graph_length > 100:
+            graph_length = 100
+        return graph_length
+
     def print_report(self, collection):
         tags = self.get_categories(collection, self.filter_level)
         if len(tags) == 0:
             print("Filter did not return any matching item")
             return
 
+        max_tag_length = len(max(tags, key=lambda k: len(k[0]))[0]) + 1
+        if max_tag_length == 0:
+            max_tag_length = 20
+
         max_duration = next(iter(tags))[1]
         for tag in tags:
-            bar_graph = PrintHelpers.get_graph(tag[1], max_duration)
-            line = PrintHelpers.colorize(bar_graph, PrintHelpers.get_color())  + ' ' + str(DateTimeUtils.show_timedelta(tag[1])) + ' ' + str(tag[0])
+            bar_graph = PrintHelpers.get_graph(tag[1], max_duration, self.get_graph_length(max_tag_length))
+            line = PrintHelpers.colorize(str(DateTimeUtils.show_timedelta(tag[1])), TerminalColors.GREEN) + ' ' + str(tag[0]).ljust(max_tag_length) \
+                + PrintHelpers.colorize(bar_graph, PrintHelpers.get_color())
+            print(line)
+
 class DayTimelineReport(TaskReportBase):
     def __init__(self):
         super(DayTimelineReport, self).__init__()
@@ -212,3 +211,4 @@ class DayTimelineReport(TaskReportBase):
             description = PrintHelpers.max_width(kv[1].description, 40)
             line = PrintHelpers.colorize(description + ' '*start + u'\u2588'*length, PrintHelpers.get_color())
             print(line)
+
