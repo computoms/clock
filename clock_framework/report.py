@@ -182,4 +182,33 @@ class CategoriesReport(TaskReportBase):
         for tag in tags:
             bar_graph = PrintHelpers.get_graph(tag[1], max_duration)
             line = PrintHelpers.colorize(bar_graph, PrintHelpers.get_color())  + ' ' + str(DateTimeUtils.show_timedelta(tag[1])) + ' ' + str(tag[0])
+class DayTimelineReport(TaskReportBase):
+    def __init__(self):
+        super(DayTimelineReport, self).__init__()
+    
+    def print_report(self, collection):
+        periods = []
+        for task in collection.tasks:
+            for p in task.periods:
+                periods.append([p, task])
+
+        periods = sorted(periods, key=lambda t: t[0].start)
+
+        total_width = os.get_terminal_size().columns
+        if total_width < 60:
+            print("Terminal is too small to show timeline")
+            return
+        hour_width = int((total_width - 40) / 11)
+
+        print('Description'.ljust(40) + '8'.ljust(hour_width) + '9'.ljust(hour_width) + '10'.ljust(hour_width) \
+            + '11'.ljust(hour_width) + '12'.ljust(hour_width) + '13'.ljust(hour_width) + '14'.ljust(hour_width) \
+            + '15'.ljust(hour_width) + '16'.ljust(hour_width) + '17'.ljust(hour_width) + '18'.ljust(hour_width))
+        for kv in periods:
+            p = kv[0]
+            seconds_start = (p.start - datetime.datetime(datetime.datetime.today().year, datetime.datetime.today().month, datetime.datetime.today().day, 8)).seconds
+            seconds_end = seconds_start + (p.end - p.start).seconds
+            start = int(seconds_start * hour_width / 3600)
+            length = int((seconds_end - seconds_start) * hour_width / 3600)
+            description = PrintHelpers.max_width(kv[1].description, 40)
+            line = PrintHelpers.colorize(description + ' '*start + u'\u2588'*length, PrintHelpers.get_color())
             print(line)

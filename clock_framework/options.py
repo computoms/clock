@@ -31,6 +31,7 @@ class ClockArguments:
         # Reports
         parser.add_argument('-d', '--details', action='store_true', help='<show> [Report] Shows detailed report')
         parser.add_argument('--categories', action='store_true', help='<show> [Report] Shows categories report (default)', default=True)
+        parser.add_argument('--timeline', action='store_true', help='<show> [Report] Shows issues on a timeline (only when --today is specified)')
         # Settings
         parser.add_argument('-T', '--target', type=str, metavar='HH:MM', help='<show> [Config] Sets expected target time (format HH:MM) and computes the difference with actual times in the reports')
         parser.add_argument('--target-per-day', type=str, metavar='HH:MM', help='<show> [Config] Sets expected target time per day (format HH:MM) and computes the difference with actual times in the reports')
