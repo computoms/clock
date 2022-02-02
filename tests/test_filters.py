@@ -58,3 +58,60 @@ class TestPeriodFilter(unittest.TestCase):
         self.assertTrue(filter.is_valid(task))
         new_task = filter.get_task(task)
         self.assertEqual(len(new_task.periods), 2)
+    
+class TestIdFilter(unittest.TestCase):
+    def test__no_id__returns_true(self):
+        filter = IdFilter([])
+        task = Task('Test', datetime.today())
+
+        self.assertTrue(filter.is_valid(task))
+
+    def test__valid_id__returns_true(self):
+        filter = IdFilter(['.123'])
+        task = Task('Test', datetime.today())
+        task.ids.append('.123')
+
+        self.assertTrue(filter.is_valid(task))
+
+    def test__multiple_ids_one_valid__returns_true(self):
+        filter = IdFilter(['.123'])
+        task = Task('Test', datetime.today())
+        task.ids.append('.123')
+        task.ids.append('.456')
+
+        self.assertTrue(filter.is_valid(task))
+
+    def test__invalid_id__returns_false(self):
+        filter = IdFilter(['.123'])
+        task = Task('Test', datetime.today())
+        task.ids.append('.456')
+
+        self.assertFalse(filter.is_valid(task))
+
+class TestLastFilter(unittest.TestCase):
+    def test__one_task__returns_task(self):
+        filter = LastFilter(1)
+        c = TaskCollection()
+        c.tasks.append(Task('Test', datetime.today()))
+
+        c = filter.apply_to(c)
+        self.assertTrue(len(c.tasks) == 1)
+
+    def test__two_tasks__returns_one_task(self):
+        filter = LastFilter(1)
+        c = TaskCollection()
+        c.tasks.append(Task('Test', datetime.today()))
+        c.tasks.append(Task('Test2', datetime.today()))
+
+        c = filter.apply_to(c)
+        self.assertTrue(len(c.tasks) == 1)
+
+    def test__no_task__does_not_throw(self):
+        filter = LastFilter(1)
+        c = TaskCollection()
+
+        c = filter.apply_to(c)
+        self.assertTrue(len(c.tasks) == 0)
+
+    
+
