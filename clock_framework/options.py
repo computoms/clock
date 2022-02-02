@@ -40,7 +40,7 @@ class ClockArguments:
             self.input_args = ['show']
 
         opt, args = parser.parse_known_args(self.input_args)
-        if opt.command not in ('add', 'stop', 'show'):
+        if opt.command not in ('add', 'edit', 'stop', 'show'):
             args.insert(0, opt.command)
             opt.command = 'add'
 
