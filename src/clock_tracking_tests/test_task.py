@@ -1,6 +1,6 @@
 import unittest
 import datetime
-from clock_framework.task import Task, Period, TaskCollection
+from clock_tracking.task import Task, Period, TaskCollection
 
 class TestTaskParse(unittest.TestCase):
     def test__single_description__parses_correctly(self):

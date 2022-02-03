@@ -1,6 +1,6 @@
 import unittest
 import datetime
-from clock_framework.logger import ClockLogger, ClockReader
+from clock_tracking.logger import ClockLogger, ClockReader
 
 class TestClockLoggerDateExists(unittest.TestCase):
     def test__empty__returns_false(self):

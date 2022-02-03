@@ -1,5 +1,5 @@
-from clock_framework.task import Task
-from clock_framework.task import TaskCollection
+from clock_tracking.task import Task
+from clock_tracking.task import TaskCollection
 
 class TaskFilterBase:
     def is_valid(self, task):

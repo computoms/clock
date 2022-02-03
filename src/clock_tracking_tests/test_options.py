@@ -1,6 +1,6 @@
 import unittest
 import datetime
-from clock_framework import datetimeutils, options
+from clock_tracking import datetimeutils, options
 
 class TestClockArgumentsGetTargetTime(unittest.TestCase):
     def test__global_target__returns_global_target(self):

@@ -1,7 +1,7 @@
 import datetime
 from xmlrpc.client import DateTime
-from clock_framework.datetimeutils import DateTimeUtils
-from clock_framework.colors import TerminalColors
+from clock_tracking.datetimeutils import DateTimeUtils
+from clock_tracking.colors import TerminalColors
 import os
 
 class PrintHelpers:

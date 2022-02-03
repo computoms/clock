@@ -3,8 +3,8 @@ from datetime import timedelta
 import argparse
 import sys
 from os.path import expanduser
-from clock_framework.datetimeutils import DateTimeUtils
-from clock_framework import filters
+from clock_tracking.datetimeutils import DateTimeUtils
+from clock_tracking import filters
 
 class TargetTime:
     def __init__(self, target, is_per_day):

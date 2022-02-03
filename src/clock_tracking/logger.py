@@ -1,7 +1,7 @@
 from datetime import date
 from datetime import datetime
-from clock_framework.datetimeutils import DateTimeUtils
-from clock_framework import task
+from clock_tracking.datetimeutils import DateTimeUtils
+from clock_tracking import task
 
 class ClockLogger:
     def __init__(self):

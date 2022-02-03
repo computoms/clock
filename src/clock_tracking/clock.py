@@ -1,7 +1,7 @@
-from clock_framework import logger
-from clock_framework import report
-from clock_framework import options
-from clock_framework import filters
+from clock_tracking import logger
+from clock_tracking import report
+from clock_tracking import options
+from clock_tracking import filters
 from os.path import expanduser
 
 class Clock():
