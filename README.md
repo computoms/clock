@@ -36,14 +36,24 @@ IDs allow to track time of tasks from an external tool, such as Jira. Entries wi
 
 The `[Stop]` task is used to stop the last task. It is not required if you switch tasks without taking a break.
 
-# Script usage
+# Installation
+
+The program is available as a python packge through Pypi, so you can download it using pip:
+
+```
+python -m pip install --index-url https://test.pypi.org/simple/ clock-tracking-computoms
+```
+
+# Usage
 
 ## Tracking tasks
 
-Use the `./clock` command to start working on a new task:
+Using the `clock_tracking` python package to run the program, i.e. `python -m clock_tracking`. 
+
+You can add a new entry by adding the entry definition after the package name:
 
 ```
-$ ./clock Definition of the prototype +myapp +proto
+$ python -m clock_tracking Definition of the prototype +myapp +proto
 Added: 08:10 Definition of the prototype +myapp +proto
 
 Duration   Date                  Start      Stop       Tags            Name                               IDs
@@ -53,7 +63,7 @@ Duration   Date                  Start      Stop       Tags            Name     
 To switch to a new task, just use the same command:
 
 ```
-$ ./clock Switching to new task
+$ python -m clock_tracking Switching to new task
 Added: 09:02 Switching to a new task
 
 Duration   Date                  Start      Stop       Tags            Name                               IDs
@@ -63,7 +73,7 @@ Duration   Date                  Start      Stop       Tags            Name     
 This will automatically stop the last task and start a new one. When you have finished working, use the `stop` command:
 
 ```
-$ ./clock stop
+$ python -m clock_tracking stop
 Added: 10:00 [Stop]
 ```
 
@@ -72,7 +82,7 @@ Added: 10:00 [Stop]
 You can show reports/statistics with the `show` command:
 
 ```
-$ ./clock show
+$ python -m clock_tracking show
 ```
 
 All tasks are ordered by first tag by default. Several filters are available, see `./clock --help` for the full documentation.
@@ -80,19 +90,19 @@ All tasks are ordered by first tag by default. Several filters are available, se
 To show all the tasks with their details:
 
 ```
-$ ./clock show --details
+$ python -m clock_tracking show --details
 ```
 
 To filter by a tag:
 
 ```
-$ ./clock show +tag
+$ python -m clock_tracking show +tag
 ```
 
 To filter by an ID:
 
 ```
-$ ./clock show .345
+$ python -m clock_tracking show .345
 ```
 
 ## Examples
