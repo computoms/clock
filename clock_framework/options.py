@@ -11,6 +11,9 @@ class TargetTime:
         self.target = target
         self.is_per_day = is_per_day
 
+class ClockCommands:
+    list = ['add', 'edit', 'stop', 'show']
+
 class ClockArguments:
     def __init__(self):
         self.input_args = sys.argv[1:]
@@ -18,29 +21,32 @@ class ClockArguments:
         self.arguments = []
     
     def parse(self):
-        parser = argparse.ArgumentParser(description='Helps managing time tracking')
+        parser = argparse.ArgumentParser(description='Helps managing time tracking from the command-line')
         parser.add_argument('command', default='add', help='Command (add, edit, show). add: add a new entry. edit: edit current entry\'s description. show: show reports and statistics.')
-        parser.add_argument('-f', '--file', type=str, help='Speficy the file to store time entries. Default is ~/clock.txt')
-        parser.add_argument('-a', '--at', type=str, metavar='HH:MM', default=datetime.today().strftime('%H:%M'), help='<add> Specify a time (format HH:MM) of a new entry')
+        settings_group = parser.add_argument_group('settings')
+        settings_group.add_argument('-f', '--file', type=str, help='Speficy the file to store time entries. Default is ~/clock.txt')
+        settings_group.add_argument('--target', type=str, metavar='HH:MM', help='<show> Sets expected target time (format HH:MM) and computes the difference with actual times in the reports')
+        settings_group.add_argument('--target-per-day', type=str, metavar='HH:MM', help='<show> Sets expected target time per day (format HH:MM) and computes the difference with actual times in the reports')
+        add_group = parser.add_argument_group('add')
+        add_group.add_argument('-a', '--at', type=str, metavar='HH:MM', default=datetime.today().strftime('%H:%M'), help='<add> Specify a time (format HH:MM) of a new entry')
         # Filters
-        parser.add_argument('-t', '--today', action='store_true', help='<show> [Filter] Show only entries from today')
-        parser.add_argument('-w', '--week', action='store_true', help='<show> [Filter] Show only entries from the current week')
-        parser.add_argument('-s', '--from', type=str, metavar='YYYY-mm-dd', dest='from_', help='<show> [Filter] Include entries with start date later or equal to given date (format YYYY-mm-dd)')
-        parser.add_argument('-e', '--to', type=str, metavar='YYYY-mm-dd', help='<show> [Filter] Include entries with start date earlier or equal to given date (format YYYY-mm-dd)')
-        parser.add_argument('-l', '--last', type=int, metavar='n', help='<show> [Filter] Show only the last n entries', default=0)
+        filter_group = parser.add_argument_group('filters')
+        filter_group.add_argument('-t', '--today', action='store_true', help='<show> Show only entries from today')
+        filter_group.add_argument('-w', '--week', action='store_true', help='<show> Show only entries from the current week')
+        filter_group.add_argument('-s', '--from', type=str, metavar='YYYY-mm-dd', dest='from_', help='<show> Include entries with start date later or equal to given date (format YYYY-mm-dd)')
+        filter_group.add_argument('-e', '--to', type=str, metavar='YYYY-mm-dd', help='<show> Include entries with start date earlier or equal to given date (format YYYY-mm-dd)')
+        filter_group.add_argument('-l', '--last', type=int, metavar='n', help='<show> Show only the last n entries', default=0)
         # Reports
-        parser.add_argument('-d', '--details', action='store_true', help='<show> [Report] Shows detailed report')
-        parser.add_argument('--categories', action='store_true', help='<show> [Report] Shows categories report (default)', default=True)
-        parser.add_argument('--timeline', action='store_true', help='<show> [Report] Shows issues on a timeline (only when --today is specified)')
-        # Settings
-        parser.add_argument('-T', '--target', type=str, metavar='HH:MM', help='<show> [Config] Sets expected target time (format HH:MM) and computes the difference with actual times in the reports')
-        parser.add_argument('--target-per-day', type=str, metavar='HH:MM', help='<show> [Config] Sets expected target time per day (format HH:MM) and computes the difference with actual times in the reports')
+        report_group = parser.add_argument_group('reports')
+        report_group.add_argument('-d', '--details', action='store_true', help='<show> Shows detailed report')
+        report_group.add_argument('--categories', action='store_true', help='<show> Shows categories report (default)', default=True)
+        report_group.add_argument('--timeline', action='store_true', help='<show> Shows issues on a timeline (only when --today is specified)')
 
         if len(self.input_args) == 0:
             self.input_args = ['show']
 
         opt, args = parser.parse_known_args(self.input_args)
-        if opt.command not in ('add', 'edit', 'stop', 'show'):
+        if opt.command not in ClockCommands.list:
             args.insert(0, opt.command)
             opt.command = 'add'
 
