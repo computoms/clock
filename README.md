@@ -107,13 +107,9 @@ $ python -m clock_tracking show .345
 
 ## Examples
 
-Show today's tasks:
+Report by tags / projects:
 
-![Show today's tasks](https://github.com/computoms/clock/blob/main/img/today.png?raw=true)
-
-Show tasks by tags:
-
-![Show tasks by +myapp tag](https://github.com/computoms/clock/blob/main/img/myapp.png?raw=true)
+![Show tasks by tags](https://github.com/computoms/clock/blob/main/img/myapp.png?raw=true)
 
 Show today's tasks details:
 
@@ -122,36 +118,38 @@ Show today's tasks details:
 ## Documentation
 
 ```
-usage: clock [-h] [-a HH:MM] [-c] [-f FILE] [-t] [-w] [-s YYYY-mm-dd]
-             [-e YYYY-mm-dd] [-T HH:MM] [-D HH:MM] [-d]
-             command
+usage: __main__.py [-h] [-f FILE] [--target HH:MM] [--target-per-day HH:MM] [-a HH:MM] [-t] [-w] [-s YYYY-mm-dd] [-e YYYY-mm-dd] [-l n] [-d]
+                   [--categories] [--timeline]
+                   command
 
-Helps managing time tracking
+Helps managing time tracking from the command-line
 
 positional arguments:
-  command
+  command               Command (add, edit, show). add: add a new entry. edit: edit current entry's description. show: show reports and statistics.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
+
+settings:
+  -f FILE, --file FILE  Speficy the file to store time entries. Default is ~/clock.txt
+  --target HH:MM        <show> Sets expected target time (format HH:MM) and computes the difference with actual times in the reports
+  --target-per-day HH:MM
+                        <show> Sets expected target time per day (format HH:MM) and computes the difference with actual times in the reports
+
+add:
   -a HH:MM, --at HH:MM  <add> Specify a time (format HH:MM) of a new entry
-  -c, --current         <add> Modify the description of the current entry
-  -f FILE, --file FILE  Speficy the file to store time entries. Default is
-                        ./clock.txt
+
+filters:
   -t, --today           <show> Show only entries from today
   -w, --week            <show> Show only entries from the current week
   -s YYYY-mm-dd, --from YYYY-mm-dd
-                        <show> Include entries with start date later or equal
-                        to given date (format YYYY-mm-dd)
+                        <show> Include entries with start date later or equal to given date (format YYYY-mm-dd)
   -e YYYY-mm-dd, --to YYYY-mm-dd
-                        <show> Include entries with start date earlier or
-                        equal to given date (format YYYY-mm-dd)
-  -T HH:MM, --target HH:MM
-                        <show> Sets expected target time (format HH:MM) and
-                        computes the difference with actual times in the
-                        reports
-  -D HH:MM, --target-per-day HH:MM
-                        <show> Sets expected target time per day (format
-                        HH:MM) and computes the difference with actual times
-                        in the reports
+                        <show> Include entries with start date earlier or equal to given date (format YYYY-mm-dd)
+  -l n, --last n        <show> Show only the last n entries
+
+reports:
   -d, --details         <show> Shows detailed report
+  --categories          <show> Shows categories report (default)
+  --timeline            <show> Shows issues on a timeline (only when --today is specified)
 ```
