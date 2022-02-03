@@ -41,14 +41,14 @@ The `[Stop]` task is used to stop the last task. It is not required if you switc
 The program is available as a python packge through Pypi, so you can download it using pip:
 
 ```
-python -m pip install --index-url https://test.pypi.org/simple/ clock-tracking-computoms
+python -m pip install clock-tracking
 ```
 
 # Usage
 
 ## Tracking tasks
 
-Using the `clock_tracking` python package to run the program, i.e. `python -m clock_tracking`. 
+Use the `clock_tracking` python package to run the program, i.e. `python -m clock_tracking`. 
 
 You can add a new entry by adding the entry definition after the package name:
 

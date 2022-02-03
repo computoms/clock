@@ -2,4 +2,4 @@
 *.txt
 *.DS_Store
 dist/*
-src/clock_tracking_computoms.egg-info/*
+src/clock_tracking.egg-info/*
