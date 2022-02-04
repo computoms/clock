@@ -46,7 +46,7 @@ python -m pip install clock-tracking
 
 ## Creating an alias
 
-You can create a shortcut (alias) so make the package easier to be called from the command line. Follow the instructions below depending on your operating system.
+You can create a shortcut (alias) to make the package easier to be called from the command line. Follow the instructions below depending on your operating system.
 
 ### Windows PowerShell
 
