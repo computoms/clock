@@ -44,16 +44,37 @@ The program is available as a python packge through Pypi, so you can download it
 python -m pip install clock-tracking
 ```
 
+## Creating an alias
+
+You can create a shortcut (alias) so make the package easier to be called from the command line. Follow the instructions below depending on your operating system.
+
+### Windows PowerShell
+
+On Windows, you can use the script with PowerShell. To create an alias permenantly, open your `profile.ps1` file (see [Windows PowerShell Profiles](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.2)) and add these lines:
+
+```powershell
+function Invoke-Clock { python -m clock_tracking $args }
+New-Alias -Name clock -Value Invoke-Clock
+```
+
+### MacOS / Unix
+
+Open your bash profile (see [Bash Profiles](https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html)) and add these lines:
+
+```bash
+alias clock="python -m clock_tracking"
+```
+
 # Usage
 
 ## Tracking tasks
 
-Use the `clock_tracking` python package to run the program, i.e. `python -m clock_tracking`. 
+Use the `clock_tracking` python package to run the program, i.e. `python -m clock_tracking` or directly the command alias (see above). In this documentation, we'll use the alias `clock` to call the `python -m clock_tracking` package. 
 
 You can add a new entry by adding the entry definition after the package name:
 
 ```
-$ python -m clock_tracking Definition of the prototype +myapp +proto
+$ clock Definition of the prototype +myapp +proto
 Added: 08:10 Definition of the prototype +myapp +proto
 
 Duration   Date                  Start      Stop       Tags            Name                               IDs
@@ -63,7 +84,7 @@ Duration   Date                  Start      Stop       Tags            Name     
 To switch to a new task, just use the same command:
 
 ```
-$ python -m clock_tracking Switching to new task
+$ clock Switching to new task
 Added: 09:02 Switching to a new task
 
 Duration   Date                  Start      Stop       Tags            Name                               IDs
@@ -73,7 +94,7 @@ Duration   Date                  Start      Stop       Tags            Name     
 This will automatically stop the last task and start a new one. When you have finished working, use the `stop` command:
 
 ```
-$ python -m clock_tracking stop
+$ clock stop
 Added: 10:00 [Stop]
 ```
 
@@ -82,7 +103,7 @@ Added: 10:00 [Stop]
 You can show reports/statistics with the `show` command:
 
 ```
-$ python -m clock_tracking show
+$ clock show
 ```
 
 All tasks are ordered by first tag by default. Several filters are available, see `./clock --help` for the full documentation.
@@ -90,19 +111,19 @@ All tasks are ordered by first tag by default. Several filters are available, se
 To show all the tasks with their details:
 
 ```
-$ python -m clock_tracking show --details
+$ clock show --details
 ```
 
 To filter by a tag:
 
 ```
-$ python -m clock_tracking show +tag
+$ clock show +tag
 ```
 
 To filter by an ID:
 
 ```
-$ python -m clock_tracking show .345
+$ clock show .345
 ```
 
 ## Examples
