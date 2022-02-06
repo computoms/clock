@@ -28,9 +28,13 @@ class Clock():
             self.reports.append(report.DetailsReport())
         elif self.arg.options.timeline and self.arg.options.today:
             self.reports.append(report.DayTimelineReport())
+        elif len(self.arg.arguments) > 0 and self.arg.arguments[0] == 'tags':
+            self.arg.options.categories = False
+            self.reports.append(report.TagsReport())
         elif self.arg.options.categories:
             self.reports.append(report.CategoriesReport(len(self.arg.arguments)))
-        self.reports.append(report.TotalTimeReport(self.arg.get_target_time()))
+        if self.arg.options.details or self.arg.options.timeline or self.arg.options.categories:
+            self.reports.append(report.TotalTimeReport(self.arg.get_target_time()))
 
     # Filters issues according to self.filters and shows reports in self.reports
     def show(self):

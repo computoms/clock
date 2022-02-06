@@ -186,3 +186,17 @@ class DayTimelineReport(TaskReportBase):
             line = PrintHelpers.colorize(description + ' '*start + u'\u2588'*length, PrintHelpers.get_color())
             print(line)
 
+class TagsReport(TaskReportBase):
+    def __init__(self):
+        super(TagsReport, self).__init__()
+
+    def print_report(self, collection):
+        tags = set([])
+        for task in collection.tasks:
+            for tag in task.tags:
+                tags.add(tag)
+
+        for tag in tags:
+            print(tag)
+
+    
