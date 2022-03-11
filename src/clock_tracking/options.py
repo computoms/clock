@@ -12,7 +12,7 @@ class TargetTime:
         self.is_per_day = is_per_day
 
 class ClockCommands:
-    list = ['add', 'edit', 'stop', 'show']
+    list = ['add', 'edit', 'stop', 'show', 'restart']
 
 class ClockArguments:
     def __init__(self):

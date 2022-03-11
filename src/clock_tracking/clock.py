@@ -57,6 +57,12 @@ class Clock():
         self.writer.edit_current(description)
         self.writer.write_file(self.file)
 
+    def restart(self, at):
+        self.writer.read_file(self.file)
+        desc = self.writer.get_last()
+        self.writer.add(at, desc)
+        self.writer.write_file(self.file)
+
     # Shows current issue report
     @staticmethod
     def report_current(file):
@@ -81,6 +87,8 @@ class Clock():
             clock.edit(' '.join(clock.arg.arguments))
         elif options.command == 'stop':
             clock.add(options.at, '[Stop]')
+        elif options.command == 'restart':
+            clock.restart(options.at)
 
-        if options.command in ('add', 'edit', 'stop'):
+        if options.command in ('add', 'edit', 'stop', 'restart'):
             Clock.report_current(options.file)

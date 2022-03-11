@@ -40,6 +40,16 @@ class ClockLogger:
         self.lines[-1] = new_description
         print('Edited: ' + self.lines[-1])
 
+    def get_last(self):
+        if len(self.lines) == 0:
+            return 'Starting'
+        
+        description = self.lines[-1][6:]
+        if '[Stop]' in description and len(self.lines) > 2:
+            description = self.lines[-2][6:]
+
+        return description.replace('\r', '').replace('\n', '')
+
     # Finds position of entry given the 'at' hour (today)
     def find_position(self, at):
         found_today = False
