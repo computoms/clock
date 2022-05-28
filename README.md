@@ -1,5 +1,7 @@
 # clock
 
+[![Python package](https://github.com/computoms/clock/actions/workflows/python-package.yml/badge.svg)](https://github.com/computoms/clock/actions/workflows/python-package.yml)
+
 Simple command-line time tracker based on a simple text file format.
 
 # Introduction
