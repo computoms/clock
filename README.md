@@ -148,7 +148,7 @@ usage: __main__.py [-h] [-f FILE] [--target HH:MM] [--target-per-day HH:MM] [-a 
 Helps managing time tracking from the command-line
 
 positional arguments:
-  command               Command (add, stop, restart, edit, show). add: add a new entry. stop: stop current entry. restart: Restarts last entry. edit: edit current entry\'s description. show: show reports and statistics.
+  command               Command (add, stop, restart, edit, show). add: add a new entry. stop: stop current entry. restart: restarts last entry. edit: edit current entry\'s description. show: show reports and statistics.
 
 options:
   -h, --help            show this help message and exit
