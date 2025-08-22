@@ -46,6 +46,15 @@ The program is available as a python packge through Pypi, so you can download it
 python -m pip install clock-tracking
 ```
 
+## Running without installation
+
+If you want to run the module without installing it, you can close the repository and run it locally:
+
+```bash
+git clone https://github.com/computoms/clock.git
+python clock/src/run.py
+```
+
 ## Creating an alias
 
 You can create a shortcut (alias) to make the package easier to be called from the command line. Follow the instructions below depending on your operating system.
