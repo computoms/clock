@@ -56,10 +56,6 @@ The command to use:
             self.input_args = ['show']
 
         opt, args = parser.parse_known_args(self.input_args)
-        if opt.command not in ClockCommands.list:
-            args.insert(0, opt.command)
-            opt.command = 'add'
-
         if opt.file is None or opt.file == '':
             opt.file = expanduser('~') + '/clock.txt'
 

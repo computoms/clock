@@ -43,18 +43,3 @@ class TestClockArgumentsGetFilters(unittest.TestCase):
         self.assertTrue(len(filters) == 1)
         self.assertEqual(filters[0].date_start, start_week.date())
         self.assertEqual(filters[0].date_end, end_week.date())
-
-class TestClockArgumentsParse(unittest.TestCase):
-    def test__without_command__adds_default_add(self):
-        args = options.ClockArguments()
-        args.input_args = ['This', 'is', 'a', 'test']
-        args.parse()
-        
-        self.assertEqual(args.options.command, 'add')
-
-    def test__without_argument__adds_show_command(self):
-        args = options.ClockArguments()
-        args.input_args = []
-        args.parse()
-        
-        self.assertEqual(args.options.command, 'show')

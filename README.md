@@ -82,10 +82,10 @@ alias clock="python -m clock_tracking"
 
 Use the `clock_tracking` python package to run the program, i.e. `python -m clock_tracking` or directly the command alias (see above). In this documentation, we'll use the alias `clock` to call the `python -m clock_tracking` package. 
 
-You can add a new entry by adding the entry definition after the package name:
+You can add a new entry using the `add` command:
 
 ```
-$ clock Definition of the prototype +myapp +proto
+$ clock add Definition of the prototype +myapp +proto
 Added: 08:10 Definition of the prototype +myapp +proto
 
 Duration   Date                  Start      Stop       Tags            Name                               IDs
@@ -95,7 +95,7 @@ Duration   Date                  Start      Stop       Tags            Name     
 To switch to a new task, just use the same command:
 
 ```
-$ clock Switching to new task
+$ clock add Switching to new task
 Added: 09:02 Switching to a new task
 
 Duration   Date                  Start      Stop       Tags            Name                               IDs
@@ -117,7 +117,7 @@ You can show reports/statistics with the `show` command:
 $ clock show
 ```
 
-All tasks are ordered by first tag by default. Several filters are available, see `./clock --help` for the full documentation.
+All tasks are ordered by first tag by default. Several filters are available (_e.g._ `--today`, `--yesterday`, `--week`), see `./clock --help` for the full documentation.
 
 To show all the tasks with their details:
 
