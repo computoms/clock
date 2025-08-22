@@ -21,8 +21,15 @@ class ClockArguments:
         self.arguments = []
     
     def parse(self):
-        parser = argparse.ArgumentParser(description='Helps managing time tracking from the command-line')
-        parser.add_argument('command', default='add', help='Command (add, stop, restart, edit, show). add: add a new entry. stop: stop current entry. restart: restarts last entry. edit: edit current entry\'s description. show: show reports and statistics.')
+        parser = argparse.ArgumentParser(description='Helps managing time tracking from the command-line', formatter_class=argparse.RawTextHelpFormatter)
+        parser.add_argument('command', choices=ClockCommands.list, default='add', help='''
+The command to use:
+    add     Adds a new entry
+    stop    Stops current entry
+    restart Restarts last entry
+    edit    Edits current entry
+    show    Shows reports and statistics
+                            ''', metavar='command')
         settings_group = parser.add_argument_group('settings')
         settings_group.add_argument('-f', '--file', type=str, help='Speficy the file to store time entries. Default is ~/clock.txt')
         settings_group.add_argument('--target', type=str, metavar='HH:MM', help='<show> Sets expected target time (format HH:MM) and computes the difference with actual times in the reports')
