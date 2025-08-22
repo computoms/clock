@@ -12,7 +12,7 @@ class TargetTime:
         self.is_per_day = is_per_day
 
 class ClockCommands:
-    list = ['add', 'edit', 'stop', 'show', 'restart']
+    list = ['add', 'edit', 'stop', 'show', 's', 'restart']
 
 class ClockArguments:
     def __init__(self):
@@ -29,6 +29,7 @@ The command to use:
     restart Restarts last entry
     edit    Edits current entry
     show    Shows reports and statistics
+    s       Shortcut for show
                             ''', metavar='command')
         settings_group = parser.add_argument_group('settings')
         settings_group.add_argument('-f', '--file', type=str, help='Speficy the file to store time entries. Default is ~/clock.txt')

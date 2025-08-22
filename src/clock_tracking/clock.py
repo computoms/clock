@@ -4,24 +4,109 @@ from clock_tracking import options
 from clock_tracking import filters
 from os.path import expanduser
 
+class ClockCommand():
+    def __init__(self, verbs):
+        self.verbs = verbs
+
+    def has_verb(self, verb):
+        for v in self.verbs:
+            if v == verb:
+                return True
+        return False
+
+    def exec(self):
+        pass
+
+class AddCommand(ClockCommand):
+    def __init__(self, reader, writer, arguments, file):
+        super().__init__(['add'])
+        self.reader = reader
+        self.writer = writer
+        self.args = arguments
+        self.file = file
+
+    def exec(self):
+        self.writer.read_file(self.file)
+        self.writer.add(self.args.options.at, ' '.join(self.args.arguments))
+        self.writer.write_file(self.file)
+        Clock.report_current(self.file)
+
+class StopCommand(ClockCommand):
+    def __init__(self, reader, writer, arguments, file):
+        super().__init__(['stop'])
+        self.reader = reader
+        self.writer = writer
+        self.args = arguments
+        self.file = file
+    
+    def exec(self):
+        self.writer.read_file(self.file)
+        self.writer.add(self.args.options.at, "[Stop]")
+        self.writer.write_file(self.file)
+        Clock.report_current(self.file)
+
+class EditCommand(ClockCommand):
+    def __init__(self, reader, writer, arguments, file):
+        super().__init__(['edit'])
+        self.reader = reader
+        self.writer = writer
+        self.args = arguments
+        self.file = file
+
+    def exec(self):
+        self.writer.read_file(self.file)
+        self.writer.edit_current(' '.join(self.args.arguments))
+        self.writer.write_file(self.file)
+        Clock.report_current(self.file)
+
+class RestartCommand(ClockCommand):
+    def __init__(self, reader, writer, arguments, file):
+        super().__init__(['restart'])
+        self.reader = reader
+        self.writer = writer
+        self.args = arguments
+        self.file = file
+
+    def exec(self):
+        self.writer.read_file(self.file)
+        desc = self.writer.get_last()
+        self.writer.add(self.args.options.at, desc)
+        self.writer.write_file(self.file)
+        Clock.report_current(self.file)
+
+class ShowCommand(ClockCommand):
+    def __init__(self, reader, file, filters, reports):
+        super().__init__(['show', 's'])
+        self.reader = reader
+        self.file = file
+        self.filters = filters
+        self.reports = reports
+
+    def exec(self):
+        self.reader.read_file(self.file)
+        collection = self.reader.parse()
+        for f in self.filters:
+            collection = f.apply_to(collection)
+        for r in self.reports:
+            r.print_report(collection)
+
+
 class Clock():
     def __init__(self):
-        self.reader = logger.ClockReader()
-        self.writer = logger.ClockLogger()
         self.arg = options.ClockArguments()
-
         self.filters = []
         self.reports = []
         self.file = expanduser('~') + '/clock.txt'
+        self._parse_arguments()
 
     # Parses the arguments from the options.ClockArguments() and 
     # fills in the self.file, self.filters and self.reports
-    def parse_arguments(self):
+    def _parse_arguments(self):
         self.arg.parse()
         if self.arg.options.file is not None and self.arg.options.file != '':
             self.file = self.arg.options.file
         self.filters = self.arg.get_filters()
-        if self.arg.options.command != 'show':
+        if self.arg.options.command != 'show' and self.arg.options.command != 's':
             return
 
         if self.arg.options.details:
@@ -36,59 +121,29 @@ class Clock():
         if self.arg.options.details or self.arg.options.timeline or self.arg.options.categories:
             self.reports.append(report.TotalTimeReport(self.arg.get_target_time()))
 
-    # Filters issues according to self.filters and shows reports in self.reports
-    def show(self):
-        self.reader.read_file(self.file)
-        collection = self.reader.parse()
-        for f in self.filters:
-            collection = f.apply_to(collection)
-        for r in self.reports:
-            r.print_report(collection)
+    def get_commands(self):
+        return [
+            AddCommand(logger.ClockReader(), logger.ClockLogger(), self.arg, self.file), 
+            StopCommand(logger.ClockReader(), logger.ClockLogger(), self.arg, self.file), 
+            EditCommand(logger.ClockReader(), logger.ClockLogger(), self.arg, self.file), 
+            RestartCommand(logger.ClockReader(), logger.ClockLogger(), self.arg, self.file),
+            ShowCommand(logger.ClockReader(), self.file, self.filters, self.reports)]
 
-    # Add new entry at given time (at) with given description (description)
-    def add(self, at, description):
-        self.writer.read_file(self.file)
-        self.writer.add(at, description)
-        self.writer.write_file(self.file)
+    def exec(self):
+        command = self.arg.options.command
 
-    # Edits current entry by replacing its description by given description
-    def edit(self, description):
-        self.writer.read_file(self.file)
-        self.writer.edit_current(description)
-        self.writer.write_file(self.file)
-
-    def restart(self, at):
-        self.writer.read_file(self.file)
-        desc = self.writer.get_last()
-        self.writer.add(at, desc)
-        self.writer.write_file(self.file)
+        # Dispatch command
+        for c in self.get_commands():
+            if c.has_verb(command):
+                c.exec()
 
     # Shows current issue report
     @staticmethod
     def report_current(file):
-        c = Clock()
-        c.file = file
-        c.filters.append(filters.LastFilter(1))
-        c.reports.append(report.DetailsReport())
-        c.show()
+        ShowCommand(logger.ClockReader(), file, [filters.LastFilter(1)], [report.DetailsReport()]).exec()
 
     # Single static method to run script according to command line arguments
     @staticmethod
     def run():
         clock = Clock()
-        clock.parse_arguments()
-        options = clock.arg.options
-
-        if options.command == 'show':
-            clock.show()
-        elif options.command == 'add':
-            clock.add(options.at, ' '.join(clock.arg.arguments))
-        elif options.command == 'edit':
-            clock.edit(' '.join(clock.arg.arguments))
-        elif options.command == 'stop':
-            clock.add(options.at, '[Stop]')
-        elif options.command == 'restart':
-            clock.restart(options.at)
-
-        if options.command in ('add', 'edit', 'stop', 'restart'):
-            Clock.report_current(options.file)
+        clock.exec()
