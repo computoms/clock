@@ -32,6 +32,8 @@ class ClockArguments:
         # Filters
         filter_group = parser.add_argument_group('filters')
         filter_group.add_argument('-t', '--today', action='store_true', help='<show> Show only entries from today')
+        filter_group.add_argument('-y', '--yesterday', action='store_true', help='<show> Show only entries from yesterday')
+        filter_group.add_argument('--last-day', type=int, metavar='n', help='<show> Show only entries from the day n days before today (yesterday for n=1)', default=0)
         filter_group.add_argument('-w', '--week', action='store_true', help='<show> Show only entries from the current week')
         filter_group.add_argument('-s', '--from', type=str, metavar='YYYY-mm-dd', dest='from_', help='<show> Include entries with start date later or equal to given date (format YYYY-mm-dd)')
         filter_group.add_argument('-e', '--to', type=str, metavar='YYYY-mm-dd', help='<show> Include entries with start date earlier or equal to given date (format YYYY-mm-dd)')
@@ -67,6 +69,10 @@ class ClockArguments:
         task_filters = []
         if self.options.today:
             task_filters.append(filters.DateFilter(datetime.today()))
+        elif self.options.yesterday:
+            task_filters.append(filters.DateFilter(datetime.today() - timedelta(days=1)))
+        elif self.options.last_day > 0:
+            task_filters.append(filters.DateFilter(datetime.today() - timedelta(days=self.options.last_day)))
         elif self.options.week:
             today = datetime.today()
             monday = today - timedelta(days=today.weekday())
